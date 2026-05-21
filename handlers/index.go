@@ -11,7 +11,7 @@ import (
 func Index(cfg *config.Config) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		return util.RenderView(c, templates.Dashboard(templates.IndexDto{
-			BaseDto:  components.BaseDto{VersionNumber: "0.1"},
+			BaseDto:  components.BaseDto{VersionNumber: "0.1", MapboxToken: cfg.MapboxToken},
 			ViewUrls: components.ViewUrls{},
 		}))
 	}

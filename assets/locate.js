@@ -3,6 +3,7 @@ document.addEventListener('alpine:init', () => {
         latitude: '',
         longitude: '',
         searchFilter: '',
+        mapboxToken: '',
         automaticCoordinates: false,
         options: {
             enableHighAccuracy: true,
@@ -10,6 +11,7 @@ document.addEventListener('alpine:init', () => {
             maximumAge: 0,
         },
         init() {
+            this.mapboxToken = document.getElementById("mapbox_token").value
             navigator.geolocation.getCurrentPosition((pos) => {
                 const crd = pos.coords;
 

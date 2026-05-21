@@ -37,6 +37,7 @@ templ Dashboard(content IndexDto) {
              <input name="lng" type="text" id="longitude" />
           </form>
         </div>
+        <input id="mapbox_token" type="hidden" value={ content.MapboxToken } />
         <script src="/assets/locate.js"></script>
     }
 }

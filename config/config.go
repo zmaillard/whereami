@@ -4,6 +4,7 @@ import "github.com/kelseyhightower/envconfig"
 
 type Config struct {
 	DbPath        string `envconfig:"DB_PATH"`
+	MapboxToken   string `envconfig:"MAPBOX_TOKEN"`
 	VersionNumber string
 }
 

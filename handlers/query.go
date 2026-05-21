@@ -11,7 +11,7 @@ import (
 	"github.com/zmaillard/whereami/util"
 )
 
-func InitialQuery(database *db.Database, httpClient *http.Client) echo.HandlerFunc {
+func InitialQuery(database *db.Database) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		coords := new(Coordinates)
 		var resultDto components.InitialResultDto
