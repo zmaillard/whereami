@@ -1,0 +1,42 @@
+package templates
+import (
+    "github.com/zmaillard/whereami/templates/components"
+)
+
+type IndexDto struct {
+    components.BaseDto
+    components.ViewUrls
+}
+
+templ Dashboard(content IndexDto) {
+    @Page("Where Am I?", content.BaseUrl, content.VersionNumber) {
+        <div x-data="locate" class="hero bg-base-200 min-h-screen">
+          <form id="locationForm" method="POST" action="/">
+              <div class="hero-content text-center">
+                <div class="max-w-md">
+                  <h1 class="text-5xl font-bold">Where Am I?</h1>
+                  <label class="input">
+                    <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <g
+                        stroke-linejoin="round"
+                        stroke-linecap="round"
+                        stroke-width="2.5"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                      </g>
+                    </svg>
+                    <input x-model="searchFilter" type="search" placeholder="Search" />
+                  </label>
+                  <button @click="search" class="btn btn-primary">Find</button>
+                </div>
+              </div>
+             <input name="lat" type="text" id="latitude" />
+             <input name="lng" type="text" id="longitude" />
+          </form>
+        </div>
+        <script src="/assets/locate.js"></script>
+    }
+}
