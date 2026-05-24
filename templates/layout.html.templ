@@ -1,31 +1,43 @@
 package templates
 
-templ Page (title string, baseUrl string, version string) {
+templ Page (title string, version string) {
 <!DOCTYPE html>
 <html lang="en" class="">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width,initial-scale=1" name="viewport">
-    <link rel="canonical" href={ baseUrl }>
     <meta name="theme-color" content="#1f6821">
     <title>{ title }</title>
-    <link href="/assets/app.css" rel="stylesheet" type="text/css" />
+
+    <link href="/assets/css/app.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/terminal.css@0.7.4/dist/terminal.min.css" />
     <script src="//unpkg.com/alpinejs" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
-              integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
-              crossorigin="anonymous"></script>
 </head>
-<body>
+<body class="terminal">
+    <!-- Header -->
+    <div class="container">
+    <div class="terminal-nav">
+    <header class="terminal-logo">
+        <div class="logo terminal-prompt">
+            <a href="/" class="no-style">Where Am I?</a>
+        </div>
+
+    </header>
+    <nav class="terminal-menu">
+          <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+            <li property="itemListElement" typeof="ListItem"><a href="/about" property="item" typeof="WebPage" class="menu-item"><span property="name">About</span></a><meta property="position" content="1"></li>
+          </ul>
+        </nav>
+    </div>
     <!-- Main content -->
     <main>
         { children... }
     </main>
-    <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4">
-      <aside>
+    <footer>
         <p>v{ version } - Where Am I?</p>
-      </aside>
     </footer>
-    <script src="/assets/theme.js"></script>
+</div>
+    <script src="/assets/js/theme.js"></script>
 </body>
 </html>
 }

@@ -46,7 +46,7 @@ document.addEventListener('alpine:init', () => {
             return `${this.nearest_summit} (${this.nearest_summit_elevation.toFixed(2)} feet - ${this.nearest_summit_distance.toFixed(2)} km away)`;
         },
         formattedTributaries() {
-            return this.tributaries.join(' -> ');
+            return this.tributaries.join(' &rarr; ');
         },
         sink() {
             if (this.tributaries && this.tributaries.length > 0)

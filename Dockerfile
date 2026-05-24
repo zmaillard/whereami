@@ -31,7 +31,7 @@ WORKDIR /
 
 COPY --from=build /main /main
 COPY --from=build /assets /assets
-COPY ./whereami.gpkg /whereami.db
+#COPY ./whereami.db /whereami.db
 
 EXPOSE 8080
 

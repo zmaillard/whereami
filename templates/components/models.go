@@ -2,17 +2,15 @@ package components
 
 import (
 	"time"
-
-	"github.com/labstack/echo/v5"
 )
 
 type InitialResultDto struct {
 	BaseDto
-	ViewUrls
 	County    string  `json:"county"`
 	State     string  `json:"state"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
+	Place     string  `json:"place"`
 }
 
 type ResultDto struct {
@@ -30,16 +28,4 @@ type ResultDto struct {
 type BaseDto struct {
 	VersionNumber string
 	MapboxToken   string
-}
-
-func NewViewUrls(baseUrl string, e *echo.Echo) ViewUrls {
-	return ViewUrls{
-		BaseUrl: baseUrl,
-		echo:    e,
-	}
-}
-
-type ViewUrls struct {
-	BaseUrl string
-	echo    *echo.Echo
 }

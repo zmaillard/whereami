@@ -5,6 +5,7 @@ import "github.com/kelseyhightower/envconfig"
 type Config struct {
 	DbPath        string `envconfig:"DB_PATH"`
 	MapboxToken   string `envconfig:"MAPBOX_TOKEN"`
+	ApiTimeout    int    `default:"10" envconfig:"API_TIMEOUT"`
 	VersionNumber string
 }
 

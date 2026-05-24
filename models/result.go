@@ -1,17 +1,20 @@
-package queries
+package models
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/zmaillard/whereami/templates/components"
 )
 
-type Querier func(client *http.Client, coordinates Coordinates) (Result, error)
-
 type Result interface {
 	SetResults(dto *components.ResultDto)
 }
+
 type Coordinates interface {
 	Latitude() float64
 	Longitude() float64
+}
+
+func GeomStringFromCoordinate(c Coordinates) string {
+	return fmt.Sprintf("ST_PointFromText('POINT(%v %v)')", c.Longitude(), c.Latitude())
 }

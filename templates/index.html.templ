@@ -5,39 +5,29 @@ import (
 
 type IndexDto struct {
     components.BaseDto
-    components.ViewUrls
 }
 
 templ Dashboard(content IndexDto) {
-    @Page("Where Am I?", content.BaseUrl, content.VersionNumber) {
-        <div x-data="locate" class="hero bg-base-200 min-h-screen">
+    @Page("Where Am I?", content.VersionNumber) {
+    <div class="components">
+    <main>
+    <section x-data="locate">
           <form id="locationForm" method="POST" action="/">
-              <div class="hero-content text-center">
-                <div class="max-w-md">
-                  <h1 class="text-5xl font-bold">Where Am I?</h1>
-                  <label class="input">
-                    <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                      <g
-                        stroke-linejoin="round"
-                        stroke-linecap="round"
-                        stroke-width="2.5"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.3-4.3"></path>
-                      </g>
-                    </svg>
-                    <input x-model="searchFilter" type="search" placeholder="Search" />
-                  </label>
-                  <button @click="search" class="btn btn-primary">Find</button>
-                </div>
+             <input name="lat" type="hidden" id="latitude" />
+             <input name="lng" type="hidden" id="longitude" />
+              <div class="form-group">
+                <input x-model="searchFilter" type="text" placeholder="Enter Another Location For Where You Are">
               </div>
-             <input name="lat" type="text" id="latitude" />
-             <input name="lng" type="text" id="longitude" />
-          </form>
-        </div>
-        <input id="mapbox_token" type="hidden" value={ content.MapboxToken } />
-        <script src="/assets/locate.js"></script>
+              <div class="form-group">
+                <button @click="search" class="btn btn-default" type="submit" role="button" >Where Am I?</button>
+              </div>
+        </form>
+        <p x-show="hascoords" x-text="displaycoords"></p>
+    </section>
+    </main>
+</div>
+
+<input id="mapbox_token" type="hidden" value={ content.MapboxToken } />
+<script src="/assets/js/locate.js"></script>
     }
 }

@@ -12,11 +12,11 @@ import (
 	"github.com/zmaillard/whereami/templates/components"
 )
 
-type IndexDto struct {
+type AboutDto struct {
 	components.BaseDto
 }
 
-func Dashboard(content IndexDto) templ.Component {
+func About(content AboutDto) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -49,26 +49,13 @@ func Dashboard(content IndexDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"components\"><main><section x-data=\"locate\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"><div class=\"form-group\"><input x-model=\"searchFilter\" type=\"text\" placeholder=\"Enter Another Location For Where You Are\"></div><div class=\"form-group\"><button @click=\"search\" class=\"btn btn-default\" type=\"submit\" role=\"button\">Where Am I?</button></div></form><p x-show=\"hascoords\" x-text=\"displaycoords\"></p></section></main></div><input id=\"mapbox_token\" type=\"hidden\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 30, Col: 66}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><script src=\"/assets/js/locate.js\"></script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"components\"><main><section><h1>About Where Am I?</h1><p>TBD</p></section></main></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Page("Where Am I?", content.VersionNumber).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Page("About Where Am I?", content.VersionNumber).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

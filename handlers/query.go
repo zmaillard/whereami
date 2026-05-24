@@ -1,17 +1,19 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/zmaillard/whereami/db"
+	"github.com/zmaillard/whereami/config"
+	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/queries"
 	"github.com/zmaillard/whereami/templates"
 	"github.com/zmaillard/whereami/templates/components"
 	"github.com/zmaillard/whereami/util"
 )
 
-func InitialQuery(database *db.Database) echo.HandlerFunc {
+func InitialQuery(cfg *config.Config, database *queries.Database) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		coords := new(Coordinates)
 		var resultDto components.InitialResultDto
@@ -28,14 +30,13 @@ func InitialQuery(database *db.Database) echo.HandlerFunc {
 		resultDto.State = res.StateName
 		resultDto.Latitude = coords.Lat
 		resultDto.Longitude = coords.Lng
-		resultDto.BaseDto = components.BaseDto{VersionNumber: "0.1"}
-		resultDto.ViewUrls = components.ViewUrls{}
+		resultDto.BaseDto = components.BaseDto{VersionNumber: cfg.VersionNumber}
 
 		return util.RenderView(c, templates.Results(resultDto))
 	}
 }
 
-func Query(database *db.Database, httpClient *http.Client) echo.HandlerFunc {
+func Query(database *queries.Database, httpClient *http.Client) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		coords := new(Coordinates)
 		var resultDto components.ResultDto
@@ -43,13 +44,13 @@ func Query(database *db.Database, httpClient *http.Client) echo.HandlerFunc {
 			return err
 		}
 
-		ops := []queries.Querier{queries.GetElevation, queries.GetWeather}
-		ch := make(chan queries.Result, len(ops))
+		ops := []models.Querier{database.GetElevation, queries.GetWeather}
+		ch := make(chan models.Result, len(ops))
 		for _, query := range ops {
 			go func() {
 				res, err := query(httpClient, coords)
 				if err != nil {
-					panic(err)
+					fmt.Println(err)
 				}
 				ch <- res
 			}()
@@ -60,11 +61,6 @@ func Query(database *db.Database, httpClient *http.Client) echo.HandlerFunc {
 			res.SetResults(&resultDto)
 		}
 
-		eleRes, err := database.GetNearestSummit(coords)
-		if err != nil {
-			return err
-		}
-		eleRes.SetResults(&resultDto)
 		streamRes, err := database.GetStream(coords)
 		if err != nil {
 			return err

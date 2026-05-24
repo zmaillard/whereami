@@ -13,15 +13,15 @@ import (
 	_ "github.com/a-h/templ"
 	"github.com/labstack/echo/v5"
 	"github.com/zmaillard/whereami/config"
-	"github.com/zmaillard/whereami/db"
 	"github.com/zmaillard/whereami/handlers"
 	"github.com/zmaillard/whereami/middleware"
+	"github.com/zmaillard/whereami/queries"
 )
 
 var Version string // Injected by ldflags at build time
 
 func init() {
-	db.RegisterExtensions()
+	queries.RegisterExtensions()
 }
 
 func NewSecureClient() *http.Client {
@@ -34,7 +34,7 @@ func NewSecureClient() *http.Client {
 			MaxIdleConnsPerHost: 10,
 			IdleConnTimeout:     30 * time.Second,
 		},
-		Timeout: 5 * time.Second,
+		Timeout: 10 * time.Second,
 	}
 }
 
@@ -46,9 +46,14 @@ func main() {
 		panic(err)
 	}
 
-	database, err := db.NewDatabase(cfg)
+	database, err := queries.NewDatabase(cfg)
 	if err != nil {
 		logger.Error("failed to init database", "error", err)
+		panic(err)
+	}
+	err = database.LoadSummitTree()
+	if err != nil {
+		logger.Error("failed to init build summit index", "error", err)
 		panic(err)
 	}
 
@@ -65,16 +70,13 @@ func main() {
 		GracefulTimeout: 5 * time.Second,
 	}
 
-	err = database.LoadSummitTree()
-	if err != nil {
-		logger.Error("failed to load summit tree", "error", err)
-	}
 	e.Use(middleware.RequestLogger(logger))
 
 	e.Static("/assets", "assets")
 
 	e.GET("/", handlers.Index(cfg))
-	e.POST("/", handlers.InitialQuery(database))
+	e.GET("/about", handlers.About(cfg))
+	e.POST("/", handlers.InitialQuery(cfg, database))
 	e.POST("/query", handlers.Query(database, httpClient))
 
 	//e.RouteNotFound("/*", handlers.NotFound(logger))

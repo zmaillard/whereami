@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates/components"
 )
 
@@ -17,7 +18,7 @@ func (er *elevationResponse) SetResults(dto *components.ResultDto) {
 	dto.Elevation = er.Value
 }
 
-func GetElevation(client *http.Client, coordinates Coordinates) (Result, error) {
+func (d *Database) GetElevation(client *http.Client, coordinates models.Coordinates) (models.Result, error) {
 	url := fmt.Sprintf("https://epqs.nationalmap.gov/v1/json?x=%v&y=%v&wkid=4326&units=Feet&includeDate=false", coordinates.Longitude(), coordinates.Latitude())
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -34,12 +35,12 @@ func GetElevation(client *http.Client, coordinates Coordinates) (Result, error) 
 		return nil, err
 	}
 
-	fmt.Printf("Response: %s\n", string(body))
 	var value elevationResponse
 	err = json.Unmarshal(body, &value)
 	if err != nil {
 		fmt.Printf("Error parsing JSON %s", string(body))
 		return nil, err
 	}
-	return &value, nil
+
+	return d.GetNearestSummit(coordinates, value.Value)
 }

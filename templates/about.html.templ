@@ -1,0 +1,21 @@
+package templates
+import (
+    "github.com/zmaillard/whereami/templates/components"
+)
+
+type AboutDto struct {
+    components.BaseDto
+}
+
+templ About(content AboutDto) {
+    @Page("About Where Am I?", content.VersionNumber) {
+    <div class="components">
+    <main>
+    <section>
+    <h1>About Where Am I?</h1>
+    <p>TBD</p>
+    </section>
+    </main>
+</div>
+    }
+}

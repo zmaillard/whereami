@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates/components"
 )
 
@@ -81,7 +82,7 @@ func (mr *metadataResult) SetResults(dto *components.ResultDto) {
 	dto.Sunset = mr.Properties.AstronomicalData.Sunset
 }
 
-func GetWeather(client *http.Client, coordinates Coordinates) (Result, error) {
+func GetWeather(client *http.Client, coordinates models.Coordinates) (models.Result, error) {
 	url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -104,6 +105,7 @@ func GetWeather(client *http.Client, coordinates Coordinates) (Result, error) {
 		fmt.Printf("Error parsing JSON %s", string(body))
 		return nil, err
 	}
+
 	return &value, nil
 
 }
