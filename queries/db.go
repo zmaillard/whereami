@@ -17,11 +17,12 @@ type entrypoint struct {
 }
 
 var libNames = []entrypoint{
-	{"mod_spatialite", "sqlite3_modspatialite_init"},
+	//{"mod_spatialite.so.8.1.0", "sqlite3_modspatialite_init"},
 	{"mod_spatialite.dylib", "sqlite3_modspatialite_init"},
-	{"libspatialite.so", "sqlite3_modspatialite_init"},
-	{"libspatialite.so.5", "spatialite_init_ex"},
-	{"libspatialite.so", "spatialite_init_ex"},
+	//{"libspatialite.so", "spatialite_init_ex"},
+	//{"libspatialite.so.7.1.2", "spatialite_init_ex"},
+	//{"libspatialite.so.8", "spatialite_init_ex"},
+	{"mod_spatialite", "sqlite3_modspatialite_init"},
 }
 
 var basePath = "/opt/homebrew/Cellar/libspatialite/5.1.0_4/lib"
@@ -38,8 +39,9 @@ func RegisterExtensions() {
 				if err := conn.LoadExtension(path.Join(libPath, entry.lib), entry.proc); err == nil {
 					return nil
 				}
+				//return conn.LoadExtension(path.Join(libPath, entry.lib), entry.proc)
 			}
-			return fmt.Errorf("failed to load spatialite extension with any of the following entries: %v", libNames)
+			return fmt.Errorf("failed to load spatialite extension with any of the following entries: %v in %s", libNames, libPath)
 		},
 	})
 }

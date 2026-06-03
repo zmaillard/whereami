@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.26 AS build
+FROM golang:1.26-bookworm AS build
 
 WORKDIR /app
 
@@ -7,34 +7,30 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-
 COPY . ./
 
 ENV CGO_ENABLED=1
 ARG VERSION_APP=0.0.0
 ENV VERSION ${VERSION_APP}
 
-RUN mkdir -p /assets
 
 RUN go build \
     --ldflags "-X 'main.Version=${VERSION_APP}'" \
     -o /main main.go
 
+
 ##
 ## Deploy
 ##
-FROM alpine:3.23
+FROM debian:bookworm-slim
 
-RUN apk add libspatialite
-
+RUN apt-get update && apt-get install -y apt-file libsqlite3-mod-spatialite && rm -rf /var/lib/apt/lists/*
 WORKDIR /
 
 COPY --from=build /main /main
-COPY --from=build /assets /assets
-#COPY ./whereami.db /whereami.db
+COPY --from=build /app/assets /assets
+COPY --from=build /index /index
 
 EXPOSE 8080
-
-USER nonroot:nonroot
 
 ENTRYPOINT ["/main"]

@@ -13,7 +13,7 @@ type County struct {
 }
 
 func (d *Database) GetCounty(coords models.Coordinates) (*County, error) {
-	query := fmt.Sprintf("SELECT namelsad,statefp FROM county WHERE ST_CONTAINS(CastAutomagic(geom),%s)", models.GeomStringFromCoordinate(coords))
+	query := fmt.Sprintf("SELECT namelsad,statefp FROM county WHERE ST_CONTAINS(geom, %s)", models.GeomStringFromCoordinate(coords))
 
 	row := d.db.QueryRow(query)
 	var name, stfips string

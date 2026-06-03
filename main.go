@@ -51,6 +51,13 @@ func main() {
 		logger.Error("failed to init database", "error", err)
 		panic(err)
 	}
+
+	err = database.BuildIndex()
+	if err != nil {
+		logger.Error("failed to build index", "error", err)
+		panic(err)
+	}
+
 	err = database.LoadSummitTree()
 	if err != nil {
 		logger.Error("failed to init build summit index", "error", err)
@@ -66,7 +73,7 @@ func main() {
 	defer stop()
 
 	sc := echo.StartConfig{
-		Address:         ":8080",
+		Address:         "0.0.0.0:8080",
 		GracefulTimeout: 5 * time.Second,
 	}
 

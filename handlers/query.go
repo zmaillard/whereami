@@ -44,7 +44,7 @@ func Query(database *queries.Database, httpClient *http.Client) echo.HandlerFunc
 			return err
 		}
 
-		ops := []models.Querier{database.GetElevation, queries.GetWeather}
+		ops := []models.Querier{database.GetElevation, queries.GetWeather, database.GetStream}
 		ch := make(chan models.Result, len(ops))
 		for _, query := range ops {
 			go func() {
@@ -60,12 +60,6 @@ func Query(database *queries.Database, httpClient *http.Client) echo.HandlerFunc
 			res := <-ch
 			res.SetResults(&resultDto)
 		}
-
-		streamRes, err := database.GetStream(coords)
-		if err != nil {
-			return err
-		}
-		streamRes.SetResults(&resultDto)
 
 		return c.JSON(http.StatusOK, resultDto)
 	}
