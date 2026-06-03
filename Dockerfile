@@ -29,7 +29,6 @@ WORKDIR /
 
 COPY --from=build /main /main
 COPY --from=build /app/assets /assets
-COPY --from=build /index /index
 
 EXPOSE 8080
 
