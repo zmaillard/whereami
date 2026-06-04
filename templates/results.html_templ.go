@@ -45,14 +45,14 @@ func Results(content components.InitialResultDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"components\"><main><section x-data=\"result\"><h2>Location</h2><dl><dt>Latitude:</dt><dd id=\"latitude\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div x-data=\"result\"><h2>Location</h2><dl><dt>Latitude:</dt><dd id=\"latitude\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(content.Latitude)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 15, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 13, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -65,20 +65,20 @@ func Results(content components.InitialResultDto) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(content.Longitude)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 16, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 14, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</dd></dl><hr><h2>Political Boundaries</h2><dl><dt>County:</dt><dd>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</dd></dl><h2>Political Boundaries</h2><dl><dt>County:</dt><dd>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(content.County)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 21, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 18, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -91,13 +91,13 @@ func Results(content components.InitialResultDto) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(content.State)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 22, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `results.html.templ`, Line: 19, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</dd></dl><h2 x-show=\"!ready\" class=\"spin\">Loading</h2><template x-if=\"ready\"><div><hr><h2>Meteorology</h2><dl><dt>Weather Service Office:</dt><dd><a :href=\"formattedOfficeLink\" x-text=\"weather_service_office\"></a></dd><dt>Sunrise</dt><dd x-text=\"sunrise\"></dd><dt>Sunset</dt><dd x-text=\"sunset\"></dd></dl><hr><h2>Topography</h2><dl><dt>Elevation:</dt><dd x-text=\"formattedElevation\"></dd><dt>Nearest Summit:</dt><dd x-text=\"formattedSummit\"></dd></dl><hr><h2>Hydrography</h2><dl><dt>Drains Into: </dt><dd x-text=\"sink\"></dd><dt>All Tributaries: </dt><dd x-html=\"formattedTributaries\"></dd></dl></div></template></section></main><script src=\"/assets/js/result.js\"></script></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</dd></dl><h2 x-show=\"!ready\" class=\"spin\">Loading</h2><template x-if=\"ready\"><div><h2>Meteorology</h2><dl><dt>Weather Service Office:</dt><dd><a :href=\"formattedOfficeLink\" x-text=\"weather_service_office\"></a></dd><dt>Sunrise</dt><dd x-text=\"sunrise\"></dd><dt>Sunset</dt><dd x-text=\"sunset\"></dd></dl><h2>Topography</h2><dl><dt>Elevation:</dt><dd x-text=\"formattedElevation\"></dd><dt>Nearest Summit:</dt><dd x-text=\"formattedSummit\"></dd></dl><h2>Hydrography</h2><dl><dt>Drains Into: </dt><dd x-text=\"sink\"></dd><dt>All Tributaries: </dt><dd x-html=\"formattedTributaries\"></dd></dl></div></template></div><script src=\"/assets/js/result.js\"></script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

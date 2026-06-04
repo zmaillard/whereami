@@ -7,15 +7,12 @@ import (
 
 templ Results(content components.InitialResultDto) {
     @Page("Where Am I?", content.VersionNumber) {
-    <div class="components">
-    <main>
-    <section x-data="result">
+    <div x-data="result">
             <h2>Location</h2>
             <dl>
                 <dt>Latitude:</dt> <dd id="latitude">{content.Latitude}</dd>
                 <dt>Longitude:</dt> <dd id="longitude">{content.Longitude}</dd>
             </dl>
-            <hr />
             <h2>Political Boundaries</h2>
             <dl>
                 <dt>County:</dt> <dd>{content.County}</dd>
@@ -24,20 +21,17 @@ templ Results(content components.InitialResultDto) {
             <h2 x-show="!ready" class="spin">Loading</h2>
             <template x-if="ready">
                 <div>
-                    <hr />
                     <h2>Meteorology</h2>
                     <dl>
                     <dt>Weather Service Office:</dt> <dd><a :href="formattedOfficeLink" x-text="weather_service_office"></a></dd>
                     <dt>Sunrise</dt><dd x-text="sunrise"></dd>
                     <dt>Sunset</dt><dd x-text="sunset"></dd>
                     </dl>
-                    <hr />
                     <h2>Topography</h2>
                     <dl>
                     <dt>Elevation:</dt> <dd x-text="formattedElevation"></dd>
                     <dt>Nearest Summit:</dt> <dd x-text="formattedSummit"></dd>
                     </dl>
-                    <hr/>
                     <h2>Hydrography</h2>
                     <dl>
                         <dt>Drains Into: </dt> <dd x-text="sink"></dd>
@@ -45,9 +39,7 @@ templ Results(content components.InitialResultDto) {
                     </dl>
                 </div>
             </template>
-          </section>
-          </main>
-          <script src="/assets/js/result.js"></script>
           </div>
+          <script src="/assets/js/result.js"></script>
     }
 }

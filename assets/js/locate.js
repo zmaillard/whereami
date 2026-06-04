@@ -4,6 +4,7 @@ document.addEventListener('alpine:init', () => {
         longitude: '',
         searchFilter: '',
         mapboxToken: '',
+        place: '',
         automaticCoordinates: false,
         options: {
             enableHighAccuracy: true,
@@ -11,6 +12,7 @@ document.addEventListener('alpine:init', () => {
             maximumAge: 0,
         },
         init() {
+            let self = this;
             this.mapboxToken = document.getElementById("mapbox_token").value
             navigator.geolocation.getCurrentPosition((pos) => {
                 const crd = pos.coords;
@@ -22,12 +24,39 @@ document.addEventListener('alpine:init', () => {
                 let lngInput = document.getElementById('longitude');
                 lngInput.value = this.longitude;
                 this.automaticCoordinates = true;
+
+
+                fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${this.longitude}&latitude=${this.latitude}&access_token=${this.mapboxToken}`)
+                    .then(r=>r.json())
+                    .then(r=>{
+                        console.log(r)
+                        self.place = self.getPlace(r);
+                    })
+
             }, (err)=> {
                 console.warn(`ERROR(${err.code}): ${err.message}`);
             }, this.options);
         },
+        getPlace(reverseGeocode) {
+          if (reverseGeocode && reverseGeocode.features) {
+              for (let feature of reverseGeocode.features) {
+                  if (feature.properties && feature.properties.feature_type && feature.properties.feature_type === 'place') {
+                      return feature.properties.full_address;
+                  }
+              }
+          }
+
+          return '';
+        },
         hascoords(){
             return this.latitude && this.longitude
+        },
+        hasplace(){
+            return !!this.place;
+
+        },
+        formatplace(){
+            return `Current Location: ${this.place}`
         },
         displaycoords(){
             return `Current Location: ${this.latitude}, ${this.longitude}`
