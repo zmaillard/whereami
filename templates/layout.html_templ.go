@@ -42,7 +42,7 @@ func Page(title string, version string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"/assets/css/app.css\" rel=\"stylesheet\" type=\"text/css\"><link rel=\"stylesheet\" href=\"https://unpkg.com/terminal.css@0.7.4/dist/terminal.min.css\"><script src=\"//unpkg.com/alpinejs\" defer></script></head><body class=\"terminal\"><!-- Header --><div class=\"container\"><div class=\"terminal-nav\"><header class=\"terminal-logo\"><div class=\"logo terminal-prompt\"><a href=\"/\" class=\"no-style\">Where Am I?</a></div></header><nav class=\"terminal-menu\"><ul vocab=\"https://schema.org/\" typeof=\"BreadcrumbList\"><li property=\"itemListElement\" typeof=\"ListItem\"><a href=\"/about\" property=\"item\" typeof=\"WebPage\" class=\"menu-item\"><span property=\"name\">About</span></a><meta property=\"position\" content=\"1\"></li></ul></nav></div><!-- Main content --><main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"/assets/css/app.css\" rel=\"stylesheet\" type=\"text/css\"><!-- <link rel=\"stylesheet\" href=\"https://unpkg.com/terminal.css@0.7.4/dist/terminal.min.css\" /> --><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic\"><link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css\"><link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css\"><script src=\"//unpkg.com/alpinejs\" defer></script><script src=\"https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js\" integrity=\"sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V\" crossorigin=\"anonymous\"></script></head><body><main class=\"wrapper\"><header class=\"header\"><section class=\"container\"><h1>Where Am I?</h1></section></header><section class=\"container\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,20 +50,20 @@ func Page(title string, version string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main><footer><p>v")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</section><footer class=\"footer\"><section class=\"container\"><p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(version)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.html.templ`, Line: 37, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `layout.html.templ`, Line: 38, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " - Where Am I?</p></footer></div><script src=\"/assets/js/theme.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " - Where Am I?</p></section></footer></main><script src=\"/assets/js/theme.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

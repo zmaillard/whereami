@@ -1,53 +1,34 @@
 package templates
 
 import (
+    "time"
 
     "github.com/zmaillard/whereami/templates/components"
 )
 
-templ Results(content components.InitialResultDto) {
-    @Page("Where Am I?", content.VersionNumber) {
-    <div class="components">
-    <main>
-    <section x-data="result">
-            <h2>Location</h2>
-            <dl>
-                <dt>Latitude:</dt> <dd id="latitude">{content.Latitude}</dd>
-                <dt>Longitude:</dt> <dd id="longitude">{content.Longitude}</dd>
-            </dl>
-            <hr />
-            <h2>Political Boundaries</h2>
-            <dl>
-                <dt>County:</dt> <dd>{content.County}</dd>
-                <dt>State:</dt> <dd>{content.State}</dd>
-            </dl>
-            <h2 x-show="!ready" class="spin">Loading</h2>
-            <template x-if="ready">
-                <div>
-                    <hr />
-                    <h2>Meteorology</h2>
-                    <dl>
-                    <dt>Weather Service Office:</dt> <dd><a :href="formattedOfficeLink" x-text="weather_service_office"></a></dd>
-                    <dt>Sunrise</dt><dd x-text="sunrise"></dd>
-                    <dt>Sunset</dt><dd x-text="sunset"></dd>
-                    </dl>
-                    <hr />
-                    <h2>Topography</h2>
-                    <dl>
-                    <dt>Elevation:</dt> <dd x-text="formattedElevation"></dd>
-                    <dt>Nearest Summit:</dt> <dd x-text="formattedSummit"></dd>
-                    </dl>
-                    <hr/>
-                    <h2>Hydrography</h2>
-                    <dl>
-                        <dt>Drains Into: </dt> <dd x-text="sink"></dd>
-                        <dt>All Tributaries: </dt> <dd x-html="formattedTributaries"></dd>
-                    </dl>
-                </div>
-            </template>
-          </section>
-          </main>
-          <script src="/assets/js/result.js"></script>
-          </div>
-    }
+templ Results(content components.ResultDto) {
+    <div>
+        <h3>Location</h3>
+        <strong>Latitude:</strong> {content.GetLatitude()}
+        <br>
+        <strong>Longitude:</strong> {content.GetLongitude()}
+        <h3>Political Boundaries</h3>
+        <strong>County:</strong> {content.County}
+        <br>
+        <strong>State:</strong> {content.State}
+        <h3>Meteorology</h3>
+        <strong>Weather Service Office: </strong> <a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a>
+        <br>
+        <strong>Sunrise:</strong> {content.Sunrise.Format(time.Kitchen)}
+        <br>
+        <strong>Sunset:</strong> {content.Sunset.Format(time.Kitchen)}
+        <h3>Topography</h3>
+        <strong>Elevation:</strong> {content.GetFormattedElevation()}
+        <br>
+        <strong>Nearest Summit:</strong> {content.GetFormattedSummit()}
+        <h3>Hydrography</h3>
+        <strong>Drains Into: </strong> {content.GetSink()}
+        <br>
+        <strong>All Tributaries: </strong> {content.GetFormattedTributaries()}
+    </div>
 }

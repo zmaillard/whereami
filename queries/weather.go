@@ -12,10 +12,11 @@ import (
 )
 
 type metadataResult struct {
-	Context  []interface{} `json:"@context"`
-	Id       string        `json:"id"`
-	Type     string        `json:"type"`
-	Geometry struct {
+	OfficeName string
+	Context    []interface{} `json:"@context"`
+	Id         string        `json:"id"`
+	Type       string        `json:"type"`
+	Geometry   struct {
 		Type        string    `json:"type"`
 		Coordinates []float64 `json:"coordinates"`
 	} `json:"geometry"`
@@ -77,12 +78,13 @@ type metadataResult struct {
 }
 
 func (mr *metadataResult) SetResults(dto *components.ResultDto) {
-	dto.WeatherServiceOffice = mr.Properties.Cwa
+	dto.WeatherServiceOfficeName = mr.OfficeName
+	dto.WeatherServiceOfficeCode = mr.Properties.Cwa
 	dto.Sunrise = mr.Properties.AstronomicalData.Sunrise
 	dto.Sunset = mr.Properties.AstronomicalData.Sunset
 }
 
-func GetWeather(client *http.Client, coordinates models.Coordinates) (models.Result, error) {
+func (d *Database) GetWeather(client *http.Client, coordinates models.Coordinates) (models.Result, error) {
 	url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -104,6 +106,13 @@ func GetWeather(client *http.Client, coordinates models.Coordinates) (models.Res
 	if err != nil {
 		fmt.Printf("Error parsing JSON %s", string(body))
 		return nil, err
+	}
+
+	query := d.db.QueryRow("SELECT name FROM nwsoffice WHERE code = ?", value.Properties.Cwa)
+	var officeName string
+	err = query.Scan(&officeName)
+	if err == nil {
+		value.OfficeName = officeName
 	}
 
 	return &value, nil
