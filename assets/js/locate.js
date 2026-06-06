@@ -26,7 +26,14 @@ document.addEventListener('alpine:init', () => {
                 this.automaticCoordinates = true;
 
 
-                fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${this.longitude}&latitude=${this.latitude}&access_token=${this.mapboxToken}`)
+                let params = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({ lat: this.latitude, lng: this.longitude })
+                }
+                fetch("/geocode", params)
                     .then(r=>r.json())
                     .then(r=>{
                         console.log(r)
@@ -38,15 +45,10 @@ document.addEventListener('alpine:init', () => {
             }, this.options);
         },
         getPlace(reverseGeocode) {
-          if (reverseGeocode && reverseGeocode.features) {
-              for (let feature of reverseGeocode.features) {
-                  if (feature.properties && feature.properties.feature_type && feature.properties.feature_type === 'place') {
-                      return feature.properties.full_address;
-                  }
-              }
-          }
-
-          return '';
+            if (reverseGeocode) {
+                return `${reverseGeocode.place}, ${reverseGeocode.state}`
+            }
+            return ''
         },
         hascoords(){
             return this.latitude && this.longitude
@@ -56,20 +58,16 @@ document.addEventListener('alpine:init', () => {
 
         },
         formatplace(){
-            return `Current Location: ${this.place}`
+            return `<strong>Current Location</strong>: ${this.place}`
         },
         displaycoords(){
-            return `Current Location: ${this.latitude}, ${this.longitude}`
+            return `<strong>Current Location</strong>: ${this.latitude}, ${this.longitude}`
         },
         search(e) {
             let self = this;
             let latInput = document.getElementById('latitude');
             let lngInput = document.getElementById('longitude');
-            let formLocate = document.getElementById('locationForm');
 
-            if (latInput.value && lngInput.value && !this.searchFilter){
-                formLocate.submit();
-            }
             e.preventDefault();
 
             fetch(`https://api.mapbox.com/search/geocode/v6/forward?q=${this.searchFilter}&access_token=${this.mapboxToken}&autocomplete=false&country=us`)
@@ -77,11 +75,13 @@ document.addEventListener('alpine:init', () => {
                 .then(r=>{
                     if (r.features && r.features.length > 0) {
                         const feature = r.features[0];
+                        console.log(feature)
                         if (feature.geometry && feature.geometry.coordinates) {
                             [self.longitude, self.latitude] = feature.geometry.coordinates;
                             latInput.value = self.latitude;
                             lngInput.value = self.longitude;
-                            formLocate.submit();
+
+                            self.place = feature.properties.full_address;
                         }
 
                     }

@@ -14,8 +14,16 @@ templ Dashboard(content IndexDto) {
             <input name="lat" type="hidden" id="latitude" />
             <input name="lng" type="hidden" id="longitude" />
             <input x-model="searchFilter" type="text" placeholder="Where Is This Place?"><button @click="search" role="button" type="submit">Look</button>
+        <p x-show="hasplace" x-html="formatplace"></p>
+
+
+        <div x-show="hasplace">
+            <button hx-post="/details" hx-target="#details" hx-indicator="#spinner">Details</button>
+            <h2 id="spinner" class="htmx-indicator spin">Loading</h2>
+        </div>
+
+        <div id="details"></div>
         </form>
-        <p x-show="hasplace" x-text="formatplace"></p>
 
         <input id="mapbox_token" type="hidden" value={ content.MapboxToken } />
         <script src="/assets/js/locate.js"></script>

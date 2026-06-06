@@ -83,8 +83,8 @@ func main() {
 
 	e.GET("/", handlers.Index(cfg))
 	e.GET("/about", handlers.About(cfg))
-	e.POST("/", handlers.InitialQuery(cfg, database))
-	e.POST("/query", handlers.Query(database, httpClient))
+	e.POST("/details", handlers.Details(database, httpClient))
+	e.POST("/geocode", handlers.Geocode(database))
 
 	//e.RouteNotFound("/*", handlers.NotFound(logger))
 
