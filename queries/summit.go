@@ -5,7 +5,7 @@ import (
 
 	"github.com/dhconnelly/rtreego"
 	"github.com/zmaillard/whereami/models"
-	"github.com/zmaillard/whereami/templates/components"
+	"github.com/zmaillard/whereami/templates"
 )
 
 type Summit struct {
@@ -15,7 +15,7 @@ type Summit struct {
 	CurrentElevation float64
 }
 
-func (s *Summit) SetResults(dto *components.ResultDto) {
+func (s *Summit) SetResults(dto *templates.ResultDto) {
 	dto.NearestSummit = s.Name
 	dto.NearestSummitElevation = s.Elevation
 	dto.NearestSummitDistance = s.Distance

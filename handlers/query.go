@@ -8,23 +8,22 @@ import (
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/queries"
 	"github.com/zmaillard/whereami/templates"
-	"github.com/zmaillard/whereami/templates/components"
 	"github.com/zmaillard/whereami/util"
 )
 
 func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		coords := new(Coordinates)
-		var resultDto components.ResultDto
+		var resultDto templates.ResultDto
 		if err := c.Bind(coords); err != nil {
 			return err
 		}
 
-		ops := []models.Querier{database.GetCounty, database.GetElevation, database.GetWeather, database.GetStream}
+		ops := []models.Querier{database.GetCounty, database.GetElevation(httpClient), database.GetWeather(httpClient), database.GetStream}
 		ch := make(chan models.Result, len(ops))
 		for _, query := range ops {
 			go func() {
-				res, err := query(httpClient, coords)
+				res, err := query(coords)
 				if err != nil {
 					fmt.Println(err)
 				}

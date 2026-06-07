@@ -3,11 +3,11 @@ package models
 import (
 	"fmt"
 
-	"github.com/zmaillard/whereami/templates/components"
+	"github.com/zmaillard/whereami/templates"
 )
 
 type Result interface {
-	SetResults(dto *components.ResultDto)
+	SetResults(dto *templates.ResultDto)
 }
 
 type Coordinates interface {

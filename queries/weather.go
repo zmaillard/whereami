@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/zmaillard/whereami/models"
-	"github.com/zmaillard/whereami/templates/components"
+	"github.com/zmaillard/whereami/templates"
 )
 
 type metadataResult struct {
@@ -77,44 +77,47 @@ type metadataResult struct {
 	} `json:"properties"`
 }
 
-func (mr *metadataResult) SetResults(dto *components.ResultDto) {
+func (mr *metadataResult) SetResults(dto *templates.ResultDto) {
 	dto.WeatherServiceOfficeName = mr.OfficeName
 	dto.WeatherServiceOfficeCode = mr.Properties.Cwa
 	dto.Sunrise = mr.Properties.AstronomicalData.Sunrise
 	dto.Sunset = mr.Properties.AstronomicalData.Sunset
+	dto.TimeZone = mr.Properties.TimeZone
 }
 
-func (d *Database) GetWeather(client *http.Client, coordinates models.Coordinates) (models.Result, error) {
-	url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("accept", "application/json")
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
+func (d *Database) GetWeather(client *http.Client) models.Querier {
+	return func(coordinates models.Coordinates) (models.Result, error) {
+		url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("accept", "application/json")
+		res, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer res.Body.Close()
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
 
-	var value metadataResult
-	err = json.Unmarshal(body, &value)
-	if err != nil {
-		fmt.Printf("Error parsing JSON %s", string(body))
-		return nil, err
-	}
+		var value metadataResult
+		err = json.Unmarshal(body, &value)
+		if err != nil {
+			fmt.Printf("Error parsing JSON %s", string(body))
+			return nil, err
+		}
 
-	query := d.db.QueryRow("SELECT name FROM nwsoffice WHERE code = ?", value.Properties.Cwa)
-	var officeName string
-	err = query.Scan(&officeName)
-	if err == nil {
-		value.OfficeName = officeName
-	}
+		query := d.db.QueryRow("SELECT name FROM nwsoffice WHERE code = ?", value.Properties.Cwa)
+		var officeName string
+		err = query.Scan(&officeName)
+		if err == nil {
+			value.OfficeName = officeName
+		}
 
-	return &value, nil
+		return &value, nil
+	}
 
 }

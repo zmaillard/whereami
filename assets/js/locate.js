@@ -6,6 +6,8 @@ document.addEventListener('alpine:init', () => {
         mapboxToken: '',
         place: '',
         automaticCoordinates: false,
+        showSearch: false,
+        isCurrentLocation: true,
         options: {
             enableHighAccuracy: true,
             timeout: 5000,
@@ -36,12 +38,14 @@ document.addEventListener('alpine:init', () => {
                 fetch("/geocode", params)
                     .then(r=>r.json())
                     .then(r=>{
-                        console.log(r)
+                        self.isCurrentLocation = true;
                         self.place = self.getPlace(r);
                     })
 
             }, (err)=> {
                 console.warn(`ERROR(${err.code}): ${err.message}`);
+                self.showSearch = true;
+                self.isCurrentLocation = false;
             }, this.options);
         },
         getPlace(reverseGeocode) {
@@ -49,6 +53,9 @@ document.addEventListener('alpine:init', () => {
                 return `${reverseGeocode.place}, ${reverseGeocode.state}`
             }
             return ''
+        },
+        toggle() {
+            this.showSearch = !this.showSearch;
         },
         hascoords(){
             return this.latitude && this.longitude
@@ -58,7 +65,7 @@ document.addEventListener('alpine:init', () => {
 
         },
         formatplace(){
-            return `<strong>Current Location</strong>: ${this.place}`
+            return `<strong>${this.isCurrentLocation ? "Current Location" : "User Defined Location"}</strong>: ${this.place}`
         },
         displaycoords(){
             return `<strong>Current Location</strong>: ${this.latitude}, ${this.longitude}`
@@ -82,6 +89,7 @@ document.addEventListener('alpine:init', () => {
                             lngInput.value = self.longitude;
 
                             self.place = feature.properties.full_address;
+                            self.isCurrentLocation = false;
                         }
 
                     }

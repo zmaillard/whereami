@@ -1,34 +1,35 @@
 package templates
 
-import (
-    "time"
-
-    "github.com/zmaillard/whereami/templates/components"
-)
-
-templ Results(content components.ResultDto) {
-    <div>
+templ Results(content ResultDto) {
+    <div class="content">
         <h3>Location</h3>
-        <strong>Latitude:</strong> {content.GetLatitude()}
-        <br>
-        <strong>Longitude:</strong> {content.GetLongitude()}
+        <dl class="margins-removed">
+            <dt>Latitude</dt> <dd>{content.GetLatitude()}</dd>
+            <dt>Longitude</dt><dd>{content.GetLongitude()}</dd>
+        </dl>
+
         <h3>Political Boundaries</h3>
-        <strong>County:</strong> {content.County}
-        <br>
-        <strong>State:</strong> {content.State}
+        <dl class="margins-removed">
+            <dt>County</dt><dd>{content.County}</dd>
+            <dt>State</dt><dd>{content.State}</dd>
+        </dl>
+
         <h3>Meteorology</h3>
-        <strong>Weather Service Office: </strong> <a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a>
-        <br>
-        <strong>Sunrise:</strong> {content.Sunrise.Format(time.Kitchen)}
-        <br>
-        <strong>Sunset:</strong> {content.Sunset.Format(time.Kitchen)}
+        <dl class="margins-removed">
+            <dt>Weather Service Office </dt> <dd><a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a></dd>
+            <dt>Time Zone</dt> <dd>{content.TimeZone}</dd>
+            <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
+            <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
+        </dl>
         <h3>Topography</h3>
-        <strong>Elevation:</strong> {content.GetFormattedElevation()}
-        <br>
-        <strong>Nearest Summit:</strong> {content.GetFormattedSummit()}
+        <dl class="margins-removed">
+            <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
+            <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
+        </dl>
         <h3>Hydrography</h3>
-        <strong>Drains Into: </strong> {content.GetSink()}
-        <br>
-        <strong>All Tributaries: </strong> {content.GetFormattedTributaries()}
+        <dl class="margins-removed">
+            <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
+            <dt>All Tributaries</dt><dd>{content.GetFormattedTributaries()}</dd>
+        </dl>
     </div>
 }
