@@ -8,12 +8,8 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"github.com/zmaillard/whereami/templates/components"
-)
-
 type AboutDto struct {
-	components.BaseDto
+	BaseDto
 }
 
 func About(content AboutDto) templ.Component {

@@ -1,10 +1,6 @@
 package templates
-import (
-    "github.com/zmaillard/whereami/templates/components"
-)
-
 type IndexDto struct {
-    components.BaseDto
+    BaseDto
 }
 templ Dashboard(content IndexDto) {
     @Page("Where Am I?", content.VersionNumber) {

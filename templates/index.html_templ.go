@@ -8,12 +8,8 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"github.com/zmaillard/whereami/templates/components"
-)
-
 type IndexDto struct {
-	components.BaseDto
+	BaseDto
 }
 
 func Dashboard(content IndexDto) templ.Component {
@@ -56,7 +52,7 @@ func Dashboard(content IndexDto) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 36, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 32, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {

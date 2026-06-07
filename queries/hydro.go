@@ -2,11 +2,10 @@ package queries
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/zmaillard/whereami/models"
-	"github.com/zmaillard/whereami/templates/components"
+	"github.com/zmaillard/whereami/templates"
 )
 
 type watersheds struct {
@@ -14,12 +13,12 @@ type watersheds struct {
 	Tributaries []string
 }
 
-func (w *watersheds) SetResults(dto *components.ResultDto) {
+func (w *watersheds) SetResults(dto *templates.ResultDto) {
 	dto.Tributaries = w.Tributaries
 	dto.CurrentHuc = w.CurrentHuc
 }
 
-func (d *Database) GetStream(_ *http.Client, coords models.Coordinates) (models.Result, error) {
+func (d *Database) GetStream(coords models.Coordinates) (models.Result, error) {
 	query := fmt.Sprintf("SELECT huc12 FROM wbdhu12 WHERE ST_CONTAINS(shape,%s)", models.GeomStringFromCoordinate(coords))
 
 	row := d.db.QueryRow(query)
