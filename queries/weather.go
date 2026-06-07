@@ -82,6 +82,7 @@ func (mr *metadataResult) SetResults(dto *components.ResultDto) {
 	dto.WeatherServiceOfficeCode = mr.Properties.Cwa
 	dto.Sunrise = mr.Properties.AstronomicalData.Sunrise
 	dto.Sunset = mr.Properties.AstronomicalData.Sunset
+	dto.TimeZone = mr.Properties.TimeZone
 }
 
 func (d *Database) GetWeather(client *http.Client, coordinates models.Coordinates) (models.Result, error) {

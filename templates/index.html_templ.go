@@ -49,20 +49,20 @@ func Dashboard(content IndexDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div x-data=\"locate\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"> <input x-model=\"searchFilter\" type=\"text\" placeholder=\"Where Is This Place?\"><button @click=\"search\" role=\"button\" type=\"submit\">Look</button><p x-show=\"hasplace\" x-html=\"formatplace\"></p><div x-show=\"hasplace\"><button hx-post=\"/details\" hx-target=\"#details\" hx-indicator=\"#spinner\">Details</button><h2 id=\"spinner\" class=\"htmx-indicator spin\">Loading</h2></div><div id=\"details\"></div></form><input id=\"mapbox_token\" type=\"hidden\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section x-data=\"locate\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"><div x-show=\"showSearch\" class=\"field has-addons\"><div class=\"control\"><input x-model=\"searchFilter\" class=\"input\" type=\"text\" placeholder=\"Where Is This Place?\"></div><div class=\"control\"><button @click=\"search\" role=\"button\" class=\"button is-info\" type=\"submit\">Look</button></div></div><div x-show=\"hasplace\"><div x-html=\"formatplace\"></div><button x-show=\"isCurrentLocation\" @click=\"toggle\" type=\"button\" class=\"button is-text is-small\">Choose Different Location</button></div><div id=\"details\"></div><div x-show=\"hasplace\"><button class=\"button is-primary\" data-loading-class=\"is-loading\" data-loading-disable hx-post=\"/details\" hx-target=\"#details\">Details</button></div></form></section><input id=\"mapbox_token\" type=\"hidden\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 28, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 36, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><script src=\"/assets/js/locate.js\"></script></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><script src=\"/assets/js/locate.js\"></script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

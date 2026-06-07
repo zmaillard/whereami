@@ -1,5 +1,4 @@
 package templates
-
 templ Page (title string, version string) {
 <!DOCTYPE html>
 <html lang="en" class="">
@@ -10,34 +9,32 @@ templ Page (title string, version string) {
     <title>{ title }</title>
 
     <link href="/assets/css/app.css" rel="stylesheet" type="text/css" />
-
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
-
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    >
 
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
               integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
               crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js"></script>
 </head>
-<body>
-    <main class="wrapper">
-        <header class="header">
-            <section class="container">
-            <h1>Where Am I?</h1>
+<body hx-ext="loading-states">
+        <header>
+            <section class="hero">
+                <div class="hero-body">
+                    <p class="title">Where Am I?</p>
+                    <p class="subtitle">Short Answer</p>
+                </div>
             </section>
         </header>
-        <section class="container">
+        <main class="container">
         { children... }
-        </section>
-        <footer class="footer">
-            <section class="container">
+        </main>
+        <footer class="container">
             <p>{ version } - Where Am I?</p>
-            </section>
         </footer>
-    </main>
     <script src="/assets/js/theme.js"></script>
 </body>
 </html>

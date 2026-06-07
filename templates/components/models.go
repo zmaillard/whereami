@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	_ "time/tzdata"
 )
 
 type ResultDto struct {
@@ -22,6 +24,7 @@ type ResultDto struct {
 	NearestSummitDistance    float64   `json:"nearest_summit_distance"`
 	Tributaries              []string  `json:"tributaries"`
 	CurrentHuc               string    `json:"current_huc"`
+	TimeZone                 string    `json:"time_zone"`
 }
 
 func (d ResultDto) GetFormattedElevation() string {
