@@ -15,6 +15,7 @@ ENV VERSION ${VERSION_APP}
 
 
 RUN go build \
+    -tags timetzdata \
     --ldflags "-X 'main.Version=${VERSION_APP}'" \
     -o /main main.go
 

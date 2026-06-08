@@ -10,7 +10,7 @@ import (
 func Index(cfg *config.Config) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		return util.RenderView(c, templates.Dashboard(templates.IndexDto{
-			BaseDto: templates.BaseDto{VersionNumber: "0.1", MapboxToken: cfg.MapboxToken},
+			BaseDto: templates.BaseDto{VersionNumber: cfg.VersionNumber, MapboxToken: cfg.MapboxToken},
 		}))
 	}
 }
@@ -18,7 +18,7 @@ func Index(cfg *config.Config) echo.HandlerFunc {
 func About(cfg *config.Config) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		return util.RenderView(c, templates.About(templates.AboutDto{
-			BaseDto: templates.BaseDto{VersionNumber: "0.1", MapboxToken: cfg.MapboxToken},
+			BaseDto: templates.BaseDto{VersionNumber: cfg.VersionNumber, MapboxToken: cfg.MapboxToken},
 		}))
 	}
 }
