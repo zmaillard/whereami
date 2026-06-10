@@ -1,35 +1,85 @@
 package templates
 
 templ Results(content ResultDto) {
-    <div class="content">
-        <h3>Location</h3>
-        <dl class="margins-removed">
-            <dt>Latitude</dt> <dd>{content.GetLatitude()}</dd>
-            <dt>Longitude</dt><dd>{content.GetLongitude()}</dd>
-        </dl>
-
-        <h3>Political Boundaries</h3>
-        <dl class="margins-removed">
-            <dt>County</dt><dd>{content.County}</dd>
-            <dt>State</dt><dd>{content.State}</dd>
-        </dl>
-
-        <h3>Meteorology</h3>
-        <dl class="margins-removed">
-            <dt>Weather Service Office </dt> <dd><a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a></dd>
-            <dt>Time Zone</dt> <dd>{content.TimeZone}</dd>
-            <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
-            <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
-        </dl>
-        <h3>Topography</h3>
-        <dl class="margins-removed">
-            <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
-            <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
-        </dl>
-        <h3>Hydrography</h3>
-        <dl class="margins-removed">
-            <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
-            <dt>All Tributaries</dt><dd>{content.GetFormattedTributaries()}</dd>
-        </dl>
+    <div class="fixed-grid" autofocus>
+        <div class="grid has-2-cols">
+            <div class="cell box">
+                <div class="content">
+                    <h3>Location</h3>
+                    <dl class="margins-removed">
+                        <dt>Latitude</dt> <dd>{content.GetLatitude()}</dd>
+                        <dt>Longitude</dt><dd>{content.GetLongitude()}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="cell box">
+                <div class="content">
+                    <h3>Political Boundaries</h3>
+                    <dl class="margins-removed">
+                        <dt>County</dt><dd>{content.County}</dd>
+                        <dt>State</dt><dd>{content.State}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="cell box">
+                <div class="content">
+                    <h3>Meteorology</h3>
+                    <dl class="margins-removed">
+                        <dt>Weather Service Office </dt> <dd><a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a></dd>
+                        <dt>Time Zone</dt> <dd>{content.TimeZone}</dd>
+                        <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
+                        <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="cell box">
+                <div class="content">
+                    <h3>Topography</h3>
+                    <dl class="margins-removed">
+                        <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
+                        <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="cell box">
+                <div class="content">
+                    <h3>Hydrography</h3>
+                    <dl class="margins-removed">
+                        <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
+                        <dt>All Tributaries</dt><dd>{content.GetFormattedTributaries()}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="cell box">
+                <div class="content">
+                    <h3>Ecoregions</h3>
+                    <dl class="margins-removed">
+                        <dt>Level 1</dt><dd>{content.EcoRegionLevel1}</dd>
+                        <dt>Level 2</dt><dd>{content.EcoRegionLevel2}</dd>
+                        <dt>Level 3</dt><dd>{content.EcoRegionLevel3}</dd>
+                        <dt>Level 4</dt><dd>{content.EcoRegionLevel4}</dd>
+                    </dl>
+                </div>
+            </div>
+            if content.HasTideStation {
+                <div class="cell box">
+                    <div class="content">
+                        <h3>Tides</h3>
+                        <dl class="margins-removed">
+                            <dt>Station</dt><dd>{content.TideStationName}</dd>
+                        </dl>
+                        <table>
+                        for _, tide := range content.TidePredictions {
+                            <tr>
+                                <td>{tide.GetStage()}</td>
+                                <td>{tide.Time.Format("3:04PM MST")}</td>
+                                <td>{tide.Height} feet</td>
+                            </tr>
+                        }
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 }

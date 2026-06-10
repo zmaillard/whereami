@@ -9,22 +9,44 @@ import (
 )
 
 type ResultDto struct {
-	County                   string    `json:"county"`
-	State                    string    `json:"state"`
-	Latitude                 float64   `json:"latitude"`
-	Longitude                float64   `json:"longitude"`
-	Place                    string    `json:"place"`
-	WeatherServiceOfficeCode string    `json:"weather_service_office_code"`
-	WeatherServiceOfficeName string    `json:"weather_service_office_name"`
-	Sunrise                  time.Time `json:"sunrise"`
-	Sunset                   time.Time `json:"sunset"`
-	Elevation                float64   `json:"elevation"`
-	NearestSummit            string    `json:"nearest_summit"`
-	NearestSummitElevation   float64   `json:"nearest_summit_elevation"`
-	NearestSummitDistance    float64   `json:"nearest_summit_distance"`
-	Tributaries              []string  `json:"tributaries"`
-	CurrentHuc               string    `json:"current_huc"`
-	TimeZone                 string    `json:"time_zone"`
+	County                   string            `json:"county"`
+	State                    string            `json:"state"`
+	Latitude                 float64           `json:"latitude"`
+	Longitude                float64           `json:"longitude"`
+	Place                    string            `json:"place"`
+	WeatherServiceOfficeCode string            `json:"weather_service_office_code"`
+	WeatherServiceOfficeName string            `json:"weather_service_office_name"`
+	Sunrise                  time.Time         `json:"sunrise"`
+	Sunset                   time.Time         `json:"sunset"`
+	Elevation                float64           `json:"elevation"`
+	NearestSummit            string            `json:"nearest_summit"`
+	NearestSummitElevation   float64           `json:"nearest_summit_elevation"`
+	NearestSummitDistance    float64           `json:"nearest_summit_distance"`
+	Tributaries              []string          `json:"tributaries"`
+	CurrentHuc               string            `json:"current_huc"`
+	TimeZone                 string            `json:"time_zone"`
+	HasTideStation           bool              `json:"has_tide_station"`
+	TideStationName          string            `json:"tide_station_name"`
+	TidePredictions          []TidePredictions `json:"tide_predictions"`
+	EcoRegionLevel1          string            `json:"eco_region_level_1"`
+	EcoRegionLevel2          string            `json:"eco_region_level_2"`
+	EcoRegionLevel3          string            `json:"eco_region_level_3"`
+	EcoRegionLevel4          string            `json:"eco_region_level_4"`
+}
+
+type TidePredictions struct {
+	Stage  string
+	Height float64
+	Time   time.Time
+}
+
+func (tp TidePredictions) GetStage() string {
+	if tp.Stage == "H" {
+		return "High"
+	} else if tp.Stage == "L" {
+		return "Low"
+	}
+	return tp.Stage
 }
 
 func (d ResultDto) GetFormattedElevation() string {
