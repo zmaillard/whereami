@@ -21,17 +21,7 @@ templ Page (title string, version string) {
     <script src="https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js"></script>
 </head>
 <body hx-ext="loading-states">
-        <header>
-            <section class="hero">
-                <div class="hero-body">
-                    <p class="title">Where Am I?</p>
-                    <p class="subtitle">Information about where you are, or where you want to be</p>
-                </div>
-            </section>
-        </header>
-        <main class="container">
         { children... }
-        </main>
         <footer class="container">
             <p>{ version } - Where Am I?</p>
         </footer>

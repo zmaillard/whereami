@@ -42,10 +42,6 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 	return &Summit{Name: name, Elevation: elevation, Distance: distance, CurrentElevation: filterElevation}, nil
 }
 
-func (d *Database) BuildIndex() error {
-	return nil
-}
-
 func (d *Database) LoadSummitTree() error {
 	query := fmt.Sprintf("SELECT ST_X(geom), ST_Y(geom), feature_id, elevation FROM gnis where feature_class='Summit' and elevation is not null")
 

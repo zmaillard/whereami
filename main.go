@@ -16,6 +16,7 @@ import (
 	"github.com/zmaillard/whereami/handlers"
 	"github.com/zmaillard/whereami/middleware"
 	"github.com/zmaillard/whereami/queries"
+	"github.com/zmaillard/whereami/storage"
 )
 
 var Version string // Injected by ldflags at build time
@@ -52,11 +53,7 @@ func main() {
 		panic(err)
 	}
 
-	err = database.BuildIndex()
-	if err != nil {
-		logger.Error("failed to build index", "error", err)
-		panic(err)
-	}
+	kv := storage.NewMapStorage()
 
 	err = database.LoadSummitTree()
 	if err != nil {
@@ -83,7 +80,7 @@ func main() {
 
 	e.GET("/", handlers.Index(cfg))
 	e.GET("/about", handlers.About(cfg))
-	e.POST("/details", handlers.Details(database, httpClient))
+	e.POST("/details", handlers.Details(database, httpClient, kv))
 	e.POST("/geocode", handlers.Geocode(database))
 
 	//e.RouteNotFound("/*", handlers.NotFound(logger))

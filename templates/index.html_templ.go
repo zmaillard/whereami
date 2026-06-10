@@ -12,6 +12,16 @@ type IndexDto struct {
 	BaseDto
 }
 
+/*
+   <div x-show="hasplace">
+       <div x-html="formatplace"></div>
+       <button x-show="isCurrentLocation" @click="toggle" type="button" class="button is-text is-small">Choose Different Location</button>
+   </div>
+   <div x-show="hasplace">
+       <button class="button is-primary" data-loading-class="is-loading" data-loading-disable hx-post="/details" hx-target="#details" x-text="detailsButtonText"></button>
+   </div>
+*/
+
 func Dashboard(content IndexDto) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -45,14 +55,14 @@ func Dashboard(content IndexDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section x-data=\"locate\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"><div x-show=\"showSearch\" class=\"field has-addons\"><div class=\"control\"><input x-model=\"searchFilter\" class=\"input\" type=\"text\" placeholder=\"Where Is This Place?\"></div><div class=\"control\"><button @click=\"search\" role=\"button\" class=\"button is-info\" type=\"submit\">Look</button></div></div><div x-show=\"hasplace\"><div x-html=\"formatplace\"></div><button x-show=\"isCurrentLocation\" @click=\"toggle\" type=\"button\" class=\"button is-text is-small\">Choose Different Location</button></div><div id=\"details\"></div><div x-show=\"hasplace\"><button class=\"button is-primary\" data-loading-class=\"is-loading\" data-loading-disable hx-post=\"/details\" hx-target=\"#details\">Details</button></div></form></section><input id=\"mapbox_token\" type=\"hidden\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"hero is-fullheight\" x-data=\"locate\"><div class=\"hero-body\"><div class=\"container has-text-centered\"><h1 class=\"title\">Where Am I?</h1><h2 class=\"subtitle\">Information about where you are, or where you want to be</h2><div x-show=\"hasplace\"><div x-html=\"formatplace\"></div><div>or search for a custom location in the United States</div></div><div class=\"box\"><div class=\"field is-grouped\"><p class=\"control is-expanded\"><input x-model=\"searchFilter\" class=\"input\" type=\"text\" placeholder=\"Where Is This Place?\"></p><p class=\"control\"><button @click=\"search\" role=\"button\" class=\"button is-info\" type=\"submit\">Find Place</button></p></div></div><div x-show=\"hasplace\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><button class=\"button is-primary\" data-loading-class=\"is-loading\" data-loading-disable hx-post=\"/details\" hx-target=\"#details\" hx-swap=\"show:#details:top\" x-text=\"detailsButtonText\"></button> <input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"></form></div></div></div><div x-show=\"showSearch\"></div></div><section><div class=\"container\" id=\"details\"></div></section><input id=\"mapbox_token\" type=\"hidden\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 32, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 53, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {

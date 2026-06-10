@@ -70,6 +70,9 @@ document.addEventListener('alpine:init', () => {
         displaycoords(){
             return `<strong>Current Location</strong>: ${this.latitude}, ${this.longitude}`
         },
+        detailsButtonText() {
+            return `Show Details for ${this.place}`
+        },
         search(e) {
             let self = this;
             let latInput = document.getElementById('latitude');
