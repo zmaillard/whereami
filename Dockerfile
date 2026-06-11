@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.26-bookworm AS build
+FROM golang:1.26-trixie AS build
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ RUN go build \
 ##
 ## Deploy
 ##
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN apt-get update && apt-get install -y apt-file libsqlite3-mod-spatialite && rm -rf /var/lib/apt/lists/*
 WORKDIR /
