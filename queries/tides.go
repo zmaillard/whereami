@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/zmaillard/whereami/models"
-	"github.com/zmaillard/whereami/storage"
 	"github.com/zmaillard/whereami/templates"
 )
 
@@ -57,8 +57,9 @@ func (t tide) SetResults(dto *templates.ResultDto) {
 	dto.TidePredictions = tides
 }
 
-func (d *Database) GetTides(client *http.Client, kv storage.Storage) models.Querier {
+func (d *Database) GetTides(client *http.Client) models.Querier {
 	return func(coordinates models.Coordinates) (models.Result, error) {
+		slog.Info("Getting tide station for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
 		queryRaw := `select b.id,b.name,b.state, a.distance_m / 1000.0 as dist_km
 		from knn2 a JOIN tidestations AS b ON (b.ogc_fid = a.fid)
 		where f_table_name = 'tidestations' and ref_geometry = MakePoint(%v,%v) and radius = 1.0 and max_items = 1`
@@ -69,11 +70,13 @@ func (d *Database) GetTides(client *http.Client, kv storage.Storage) models.Quer
 		var station, stationId, state string
 		var distance float64
 		if err := row.Scan(&stationId, &station, &state, &distance); err != nil {
+			slog.Error("Error getting station", "err", err)
 			return &tide{HasTide: false}, nil
 		}
 
 		timezoneOffset, timeZone, err := getTimeZoneOffsetOfStation(client, stationId)
 		if err != nil {
+			slog.Error("Error getting timezone", "err", err)
 			return &tide{HasTide: false}, nil
 		}
 
@@ -83,23 +86,26 @@ func (d *Database) GetTides(client *http.Client, kv storage.Storage) models.Quer
 		url := fmt.Sprintf("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date=%v&range=48&station=%s&product=predictions&datum=MLLW&time_zone=lst_ldt&interval=hilo&units=english&application=DataAPI_Sample&format=json", startDate, stationId)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
+			slog.Error("Error creating request", "err", err)
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
 		res, err := client.Do(req)
 		if err != nil {
+			slog.Error("Error getting response", "err", err)
 			return nil, err
 		}
 		defer res.Body.Close()
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
+			slog.Error("Error reading response", "err", err)
 			return nil, err
 		}
 
 		var value tide
 		err = json.Unmarshal(body, &value)
 		if err != nil {
-			fmt.Printf("Error parsing JSON %s", string(body))
+			slog.Error("Error parsing JSON %s", string(body))
 			return nil, err
 		}
 		value.StationId = stationId
@@ -109,32 +115,37 @@ func (d *Database) GetTides(client *http.Client, kv storage.Storage) models.Quer
 		value.StationTimeZoneOffset = timezoneOffset
 		value.TimeZone = timeZone
 
+		slog.Info("Got tide", "station", station, "value", value)
 		return &value, nil
 	}
 
 }
 
 func getTimeZoneOffsetOfStation(client *http.Client, station string) (int, string, error) {
+	slog.Info("Getting time zone offset for station", "station", station)
 	url := fmt.Sprintf("https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/%s.json", station)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
+		slog.Error("Error creating request", "err", err)
 		return -1, "", err
 	}
 	req.Header.Add("accept", "application/json")
 	res, err := client.Do(req)
 	if err != nil {
+		slog.Error("Error getting response", "err", err)
 		return -1, "", err
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		slog.Error("Error reading response", "err", err)
 		return -1, "", err
 	}
 
 	var value stationInfo
 	err = json.Unmarshal(body, &value)
 	if err != nil {
-		fmt.Printf("Error parsing JSON %s", string(body))
+		slog.Error("Error parsing JSON %s", string(body))
 		return -1, "", err
 	}
 
@@ -150,6 +161,7 @@ func getTimeZoneOffsetOfStation(client *http.Client, station string) (int, strin
 
 	}
 
+	slog.Info("Got time zone offset for station", "station", station, "offset", offset, "timeZone", timeZone)
 	return offset, timeZone, nil
 
 }

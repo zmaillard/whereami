@@ -2,6 +2,7 @@ package queries
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/zmaillard/whereami/models"
 )
@@ -13,13 +14,17 @@ type ReverseGeocode struct {
 }
 
 func (d *Database) ReverseGeocode(coordinates models.Coordinates) (*ReverseGeocode, error) {
+	slog.Info("Reverse geocoding coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
 	query := fmt.Sprintf("SELECT name,state_name FROM place WHERE ST_CONTAINS(geometry, %s)", models.GeomStringFromCoordinate(coordinates))
 
 	row := d.db.QueryRow(query)
 	var name, state string
 	if err := row.Scan(&name, &state); err != nil {
+		slog.Warn(err.Error())
+		slog.Warn("Looking for closest place")
 		return d.findClosestPlace(coordinates)
 	}
+	slog.Info("Found place", "name", name, "state", state)
 	return &ReverseGeocode{Place: name, State: state}, nil
 
 }
@@ -35,7 +40,10 @@ func (d *Database) findClosestPlace(coordinates models.Coordinates) (*ReverseGeo
 	var name, state string
 	var distance float64
 	if err := row.Scan(&name, &state, &distance); err != nil {
+		slog.Warn(err.Error())
 		return nil, err
 	}
+
+	slog.Info("Found closest place", "name", name, "state", state)
 	return &ReverseGeocode{Place: name, State: state, Distance: &distance}, nil
 }

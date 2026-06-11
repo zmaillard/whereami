@@ -1,4 +1,7 @@
 package templates
+
+import "fmt"
+
 templ Page (title string, version string) {
 <!DOCTYPE html>
 <html lang="en" class="">
@@ -22,9 +25,15 @@ templ Page (title string, version string) {
 </head>
 <body hx-ext="loading-states">
         { children... }
-        <footer class="container">
-            <p>{ version } - Where Am I?</p>
-        </footer>
+          <footer class="footer">
+            <div class="content has-text-centered">
+              <p>
+                <strong>Where Am I?</strong> by <a href="https://zachmaillard.xyz">Zach Maillard</a> <br/> <a href="/about">About</a> | <a href={templ.URL(fmt.Sprintf("https://github.com/zmaillard/whereami/releases/tag/%s", version))}>{version}</a>
+              </p>
+            </div>
+          </footer>
+
+
     <script src="/assets/js/theme.js"></script>
 </body>
 </html>

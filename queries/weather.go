@@ -92,7 +92,7 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 		url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			slog.Error("Error creating request", "err", err)
+			slog.Error("Error creating request for weather metadata", "err", err)
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
@@ -124,6 +124,7 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 			slog.Warn("Error getting office name from database, using code instead", "err", err)
 		}
 
+		slog.Info("Found weather metadata")
 		return &value, nil
 	}
 

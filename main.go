@@ -11,12 +11,12 @@ import (
 	"time"
 
 	_ "github.com/a-h/templ"
+	echoprometheus "github.com/labstack/echo-prometheus"
 	"github.com/labstack/echo/v5"
 	"github.com/zmaillard/whereami/config"
 	"github.com/zmaillard/whereami/handlers"
 	"github.com/zmaillard/whereami/middleware"
 	"github.com/zmaillard/whereami/queries"
-	"github.com/zmaillard/whereami/storage"
 )
 
 var Version string // Injected by ldflags at build time
@@ -41,6 +41,7 @@ func NewSecureClient() *http.Client {
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	slog.SetDefault(logger)
 	cfg, err := config.NewConfigWithVersion(Version)
 	if err != nil {
 		logger.Error("failed to load config", "error", err)
@@ -53,8 +54,6 @@ func main() {
 		panic(err)
 	}
 
-	kv := storage.NewMapStorage()
-
 	err = database.LoadSummitTree()
 	if err != nil {
 		logger.Error("failed to init build summit index", "error", err)
@@ -64,9 +63,15 @@ func main() {
 	httpClient := NewSecureClient()
 
 	e := echo.New()
-
-	logCtx := middleware.WithLogger(context.Background(), logger)
-	ctx, stop := signal.NotifyContext(logCtx, os.Interrupt, syscall.SIGTERM)
+	e.Use(echoprometheus.NewMiddleware("whereami"))
+	go func() {
+		metrics := echo.New()                                // this Echo will run on separate port 8081
+		metrics.GET("/metrics", echoprometheus.NewHandler()) // adds route to serve gathered metrics
+		if err := metrics.Start(":8081"); err != nil {
+			e.Logger.Error("failed to start metrics server", "error", err)
+		}
+	}()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	sc := echo.StartConfig{
@@ -80,7 +85,7 @@ func main() {
 
 	e.GET("/", handlers.Index(cfg))
 	e.GET("/about", handlers.About(cfg))
-	e.POST("/details", handlers.Details(database, httpClient, kv))
+	e.POST("/details", handlers.Details(database, httpClient))
 	e.POST("/geocode", handlers.Geocode(database))
 
 	//e.RouteNotFound("/*", handlers.NotFound(logger))
