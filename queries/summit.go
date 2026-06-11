@@ -2,6 +2,7 @@ package queries
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/dhconnelly/rtreego"
 	"github.com/zmaillard/whereami/models"
@@ -23,8 +24,10 @@ func (s *Summit) SetResults(dto *templates.ResultDto) {
 }
 
 func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation float64) (models.Result, error) {
+	slog.Info("Getting nearest summit for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude(), "filterElevation", filterElevation)
 	results := d.rt.NearestNeighbors(1, rtreego.Point{coords.Longitude(), coords.Latitude()}, elevationFilter(filterElevation))
 	if len(results) == 0 {
+		slog.Warn("No nearest summit results found")
 		return nil, nil
 	}
 
@@ -37,18 +40,23 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 	var name string
 	var elevation, distance float64
 	if err := row.Scan(&name, &elevation, &distance); err != nil {
+		slog.Warn("Error getting summit results", "query", query, "err", err)
 		return nil, err
 	}
+
+	slog.Info("Found nearest summit", "name", name, "elevation", elevation, "distance_km", distance)
 	return &Summit{Name: name, Elevation: elevation, Distance: distance, CurrentElevation: filterElevation}, nil
 }
 
 func (d *Database) LoadSummitTree() error {
+	slog.Info("Loading summit tree")
 	query := fmt.Sprintf("SELECT ST_X(geom), ST_Y(geom), feature_id, elevation FROM gnis where feature_class='Summit' and elevation is not null")
 
 	d.rt = rtreego.NewTree(2, 25, 50)
 
 	rows, err := d.db.Query(query)
 	if err != nil {
+		slog.Error("Error loading summit tree", "query", query, "err", err)
 		return err
 	}
 	defer rows.Close()
@@ -56,12 +64,14 @@ func (d *Database) LoadSummitTree() error {
 		var x, y, elevation float64
 		var feature_id int
 		if err := rows.Scan(&x, &y, &feature_id, &elevation); err != nil {
+			slog.Error("Error loading summit tree", "query", query, "err", err)
 			return err
 		}
 
 		d.rt.Insert(&summitIndex{rtreego.Point{x, y}, elevation, feature_id})
 	}
 
+	slog.Info("Loaded summit tree")
 	return nil
 }
 

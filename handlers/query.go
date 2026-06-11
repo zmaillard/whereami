@@ -7,12 +7,11 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/queries"
-	"github.com/zmaillard/whereami/storage"
 	"github.com/zmaillard/whereami/templates"
 	"github.com/zmaillard/whereami/util"
 )
 
-func Details(database *queries.Database, httpClient *http.Client, kv storage.Storage) echo.HandlerFunc {
+func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		coords := new(Coordinates)
 		var resultDto templates.ResultDto
@@ -20,7 +19,7 @@ func Details(database *queries.Database, httpClient *http.Client, kv storage.Sto
 			return err
 		}
 
-		ops := []models.Querier{database.GetCounty, database.GetEcoregions, database.GetElevation(httpClient), database.GetWeather(httpClient), database.GetTides(httpClient, kv), database.GetStream}
+		ops := []models.Querier{database.GetCounty, database.GetEcoregions, database.GetElevation(httpClient), database.GetWeather(httpClient), database.GetTides(httpClient), database.GetStream}
 		ch := make(chan models.Result, len(ops))
 		for _, query := range ops {
 			go func() {

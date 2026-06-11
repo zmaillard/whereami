@@ -2,6 +2,7 @@ package queries
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/zmaillard/whereami/models"
@@ -19,11 +20,13 @@ func (w *watersheds) SetResults(dto *templates.ResultDto) {
 }
 
 func (d *Database) GetStream(coords models.Coordinates) (models.Result, error) {
+	slog.Info("Getting stream for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
 	query := fmt.Sprintf("SELECT huc12 FROM wbdhu12 WHERE ST_CONTAINS(shape,%s)", models.GeomStringFromCoordinate(coords))
 
 	row := d.db.QueryRow(query)
 	var huc12 string
 	if err := row.Scan(&huc12); err != nil {
+		slog.Error(err.Error())
 		return nil, err
 	}
 
@@ -41,6 +44,7 @@ func (d *Database) GetStream(coords models.Coordinates) (models.Result, error) {
 	for rows.Next() {
 		var name string
 		if err := rows.Scan(&name); err != nil {
+			slog.Error(err.Error())
 			return nil, err
 		}
 
@@ -56,6 +60,7 @@ func (d *Database) GetStream(coords models.Coordinates) (models.Result, error) {
 
 		}
 	}
+	slog.Info("Found stream", "huc12", huc12)
 	return &watersheds{Tributaries: tributaries, CurrentHuc: huc12}, nil
 
 }

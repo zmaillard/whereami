@@ -31,6 +31,4 @@ WORKDIR /
 COPY --from=build /main /main
 COPY --from=build /app/assets /assets
 
-EXPOSE 8080
-
 ENTRYPOINT ["/main"]

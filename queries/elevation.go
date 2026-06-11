@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"github.com/zmaillard/whereami/models"
@@ -20,29 +21,34 @@ func (er *elevationResponse) SetResults(dto *templates.ResultDto) {
 
 func (d *Database) GetElevation(client *http.Client) models.Querier {
 	return func(coordinates models.Coordinates) (models.Result, error) {
+		slog.Info("Getting elevation for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
 		url := fmt.Sprintf("https://epqs.nationalmap.gov/v1/json?x=%v&y=%v&wkid=4326&units=Feet&includeDate=false", coordinates.Longitude(), coordinates.Latitude())
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
+			slog.Error(err.Error())
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
 		res, err := client.Do(req)
 		if err != nil {
+			slog.Error(err.Error())
 			return nil, err
 		}
 		defer res.Body.Close()
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
+			slog.Error(err.Error())
 			return nil, err
 		}
 
 		var value elevationResponse
 		err = json.Unmarshal(body, &value)
 		if err != nil {
-			fmt.Printf("Error parsing JSON %s", string(body))
+			slog.Error("Error parsing JSON %s", string(body))
 			return nil, err
 		}
 
+		slog.Info("Found Elevation")
 		return d.GetNearestSummit(coordinates, value.Value)
 	}
 }

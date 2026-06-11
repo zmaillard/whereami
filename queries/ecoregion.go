@@ -2,6 +2,7 @@ package queries
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
@@ -24,6 +25,10 @@ type ecoregions struct {
 	Level4Key    string `db:"l4_key"`
 }
 
+func (e ecoregions) String() string {
+	return fmt.Sprintf("%s|%s|%s|%s", e.Level1Key, e.Level2Key, e.Level3Key, e.Level4Key)
+}
+
 func (e ecoregions) SetResults(dto *templates.ResultDto) {
 	dto.EcoRegionLevel1 = e.Level1Key
 	dto.EcoRegionLevel2 = e.Level2Key
@@ -32,11 +37,13 @@ func (e ecoregions) SetResults(dto *templates.ResultDto) {
 }
 
 func (d *Database) GetEcoregions(coords models.Coordinates) (models.Result, error) {
+	slog.Info("Getting ecoregions for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
 	query := fmt.Sprintf("SELECT us_l4code, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key FROM ecoregions WHERE ST_CONTAINS(geometry,%s)", models.GeomStringFromCoordinate(coords))
 
 	row := d.db.QueryRow(query)
 	var level4USCode, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key string
 	if err := row.Scan(&level4USCode, &us_l4name, &us_l3code, &us_l3name, &na_l3code, &na_l3name, &na_l2code, &na_l2name, &na_l1code, &na_l1name, &l4_key, &l3_key, &l2_key, &l1_key); err != nil {
+		slog.Error(err.Error())
 		return nil, err
 	}
 
@@ -57,5 +64,6 @@ func (d *Database) GetEcoregions(coords models.Coordinates) (models.Result, erro
 		Level4Key:    l4_key,
 	}
 
+	slog.Info("Found Ecoregions", eco.String())
 	return eco, nil
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -87,26 +88,30 @@ func (mr *metadataResult) SetResults(dto *templates.ResultDto) {
 
 func (d *Database) GetWeather(client *http.Client) models.Querier {
 	return func(coordinates models.Coordinates) (models.Result, error) {
+		slog.Info("Getting weather metadata for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
 		url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
+			slog.Error("Error creating request for weather metadata", "err", err)
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
 		res, err := client.Do(req)
 		if err != nil {
+			slog.Error("Error getting weather metadata", "err", err)
 			return nil, err
 		}
 		defer res.Body.Close()
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
+			slog.Error("Error getting weather metadata", "err", err)
 			return nil, err
 		}
 
 		var value metadataResult
 		err = json.Unmarshal(body, &value)
 		if err != nil {
-			fmt.Printf("Error parsing JSON %s", string(body))
+			slog.Error("Error parsing JSON %s", string(body))
 			return nil, err
 		}
 
@@ -115,8 +120,11 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 		err = query.Scan(&officeName)
 		if err == nil {
 			value.OfficeName = officeName
+		} else {
+			slog.Warn("Error getting office name from database, using code instead", "err", err)
 		}
 
+		slog.Info("Found weather metadata")
 		return &value, nil
 	}
 
