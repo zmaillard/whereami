@@ -45,7 +45,7 @@ func About(content AboutDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"components\"><main><section><h1>About Where Am I?</h1><p>TBD</p></section></main></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section><div class=\"container content\"><div class=\"content\"><h1>Where Am I?</h1><h1>In These United States</h1><p>A website to find information about your current location</p><h2>Data Sources</h2><ul><li>Weather</li><li>Tides</li><li>Elevation</li><li>Ecoregions</li><li>Hydrography</li></ul></div></div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

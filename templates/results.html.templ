@@ -1,58 +1,65 @@
 package templates
 
 templ Results(content ResultDto) {
-    <div class="fixed-grid" autofocus>
-        <div class="grid has-2-cols">
-            <div class="cell box">
-                <div class="content">
-                    <h3>Location</h3>
-                    <dl class="margins-removed">
-                        <dt>Latitude</dt> <dd>{content.GetLatitude()}</dd>
-                        <dt>Longitude</dt><dd>{content.GetLongitude()}</dd>
-                    </dl>
-                </div>
+    <div class="grid is-col-min-20" autofocus>
+        <div class="cell box">
+            <div class="content">
+                <h3 class="title is-3">Location</h3>
+                <dl class="margins-removed">
+                    <dt>Latitude</dt> <dd>{content.GetLatitude()}</dd>
+                    <dt>Longitude</dt><dd>{content.GetLongitude()}</dd>
+                    <dt>Time Zone</dt> <dd>{content.TimeZone}</dd>
+                </dl>
             </div>
-            <div class="cell box">
-                <div class="content">
-                    <h3>Political Boundaries</h3>
-                    <dl class="margins-removed">
-                        <dt>County</dt><dd>{content.County}</dd>
-                        <dt>State</dt><dd>{content.State}</dd>
-                    </dl>
-                </div>
+        </div>
+        <div class="cell box">
+            <div class="content">
+                <h3 class="title is-3">Political Boundaries</h3>
+                <dl class="margins-removed">
+                    <dt>County</dt><dd>{content.County}</dd>
+                    <dt>State</dt><dd>{content.State}</dd>
+                </dl>
             </div>
-            <div class="cell box">
-                <div class="content">
-                    <h3>Meteorology</h3>
+        </div>
+        <div class="cell box">
+            <div class="content">
+                <h3 class="title is-3">Meteorology</h3>
+                <dl class="margins-removed">
+                    <dt>Weather Service Office </dt> <dd><a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a></dd>
+                    <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
+                    <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
+                </dl>
+                <h4 class="subtitle is-4">Forecast</h4>
+                if content.ForecastPeriod1Name != "" && content.ForecastPeriod2Name != "" {
                     <dl class="margins-removed">
-                        <dt>Weather Service Office </dt> <dd><a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a></dd>
-                        <dt>Time Zone</dt> <dd>{content.TimeZone}</dd>
-                        <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
-                        <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
+                        <dt>{content.ForecastPeriod1Name}</dt> <dd>{content.ForecastPeriod1Details}</dd>
+                        <dt>{content.ForecastPeriod2Name}</dt> <dd>{content.ForecastPeriod2Details}</dd>
                     </dl>
-                </div>
+                }
             </div>
+        </div>
+        <div class="cell box">
+            <div class="content">
+                <h3 class="title is-3">Topography</h3>
+                <dl class="margins-removed">
+                    <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
+                    <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="cell box">
+            <div class="content">
+                <h3 class="title is-3">Hydrography</h3>
+                <dl class="margins-removed">
+                    <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
+                    <dt>All Tributaries</dt><dd>{content.GetFormattedTributaries()}</dd>
+                </dl>
+            </div>
+        </div>
+        if content.HasEcoRegion() {
             <div class="cell box">
                 <div class="content">
-                    <h3>Topography</h3>
-                    <dl class="margins-removed">
-                        <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
-                        <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="cell box">
-                <div class="content">
-                    <h3>Hydrography</h3>
-                    <dl class="margins-removed">
-                        <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
-                        <dt>All Tributaries</dt><dd>{content.GetFormattedTributaries()}</dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="cell box">
-                <div class="content">
-                    <h3>Ecoregions</h3>
+                    <h3 class="title is-3">Ecoregions</h3>
                     <dl class="margins-removed">
                         <dt>Level 1</dt><dd>{content.EcoRegionLevel1}</dd>
                         <dt>Level 2</dt><dd>{content.EcoRegionLevel2}</dd>
@@ -61,25 +68,25 @@ templ Results(content ResultDto) {
                     </dl>
                 </div>
             </div>
-            if content.HasTideStation {
-                <div class="cell box">
-                    <div class="content">
-                        <h3>Tides</h3>
-                        <dl class="margins-removed">
-                            <dt>Station</dt><dd>{content.TideStationName}</dd>
-                        </dl>
-                        <table>
-                        for _, tide := range content.TidePredictions {
-                            <tr>
-                                <td>{tide.GetStage()}</td>
-                                <td>{tide.Time.Format("3:04PM MST")}</td>
-                                <td>{tide.Height} feet</td>
-                            </tr>
-                        }
-                        </table>
-                    </div>
+        }
+        if content.HasTideStation && len(content.TidePredictions) > 0 {
+            <div class="cell box">
+                <div class="content">
+                    <h3 class="title is-3">Tides</h3>
+                    <dl class="margins-removed">
+                        <dt>Station</dt><dd>{content.TideStationName}</dd>
+                    </dl>
+                    <table>
+                    for _, tide := range content.TidePredictions {
+                        <tr>
+                            <td>{tide.GetStage()}</td>
+                            <td>{tide.Time.Format("3:04PM MST")}</td>
+                            <td>{tide.Height} feet</td>
+                        </tr>
+                    }
+                    </table>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 }

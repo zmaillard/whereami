@@ -33,7 +33,9 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 
 		for range ops {
 			res := <-ch
-			res.SetResults(&resultDto)
+			if res != nil {
+				res.SetResults(&resultDto)
+			}
 		}
 
 		return util.RenderView(c, templates.Results(resultDto))
