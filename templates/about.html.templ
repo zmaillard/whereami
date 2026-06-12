@@ -6,13 +6,23 @@ type AboutDto struct {
 
 templ About(content AboutDto) {
     @Page("About Where Am I?", content.VersionNumber) {
-    <div class="components">
-    <main>
     <section>
-    <h1>About Where Am I?</h1>
-    <p>TBD</p>
+        <div class="container content">
+            <div class="content">
+            <h1>Where Am I?</h1>
+
+            <p>Where Am I (In These United States).  A website to find information about your current location</p>
+
+            <h2>Data Sources</h2>
+            <ul>
+                <li>Weather - <a href="https://www.weather.gov/documentation/services-web-api">National Weather Service Web API</a></li>
+                <li>Tides - <a href="https://tidesandcurrents.noaa.gov">Tides and Currents Web API</a></li>
+                <li>Elevation</li>
+                <li>Ecoregions <a href="https://www.epa.gov/eco-research/level-iii-and-iv-ecoregions-continental-united-states">US Environmental Protection Agency</a></li>
+                <li>Hydrography - <a href="https://www.usgs.gov/national-hydrography/watershed-boundary-dataset">USGS Watershed Boundary Dataset</a></li>
+            </ul>
+            </div>
+        </div>
     </section>
-    </main>
-</div>
     }
 }

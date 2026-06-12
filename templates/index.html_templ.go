@@ -12,16 +12,6 @@ type IndexDto struct {
 	BaseDto
 }
 
-/*
-   <div x-show="hasplace">
-       <div x-html="formatplace"></div>
-       <button x-show="isCurrentLocation" @click="toggle" type="button" class="button is-text is-small">Choose Different Location</button>
-   </div>
-   <div x-show="hasplace">
-       <button class="button is-primary" data-loading-class="is-loading" data-loading-disable hx-post="/details" hx-target="#details" x-text="detailsButtonText"></button>
-   </div>
-*/
-
 func Dashboard(content IndexDto) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -62,7 +52,7 @@ func Dashboard(content IndexDto) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 53, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 44, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {

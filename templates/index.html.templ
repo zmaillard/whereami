@@ -3,15 +3,6 @@ type IndexDto struct {
     BaseDto
 }
 
-/*
-        <div x-show="hasplace">
-            <div x-html="formatplace"></div>
-            <button x-show="isCurrentLocation" @click="toggle" type="button" class="button is-text is-small">Choose Different Location</button>
-        </div>
-        <div x-show="hasplace">
-            <button class="button is-primary" data-loading-class="is-loading" data-loading-disable hx-post="/details" hx-target="#details" x-text="detailsButtonText"></button>
-        </div>
-*/
 templ Dashboard(content IndexDto) {
     @Page("Where Am I?", content.VersionNumber) {
     <div class="hero is-fullheight" x-data="locate">

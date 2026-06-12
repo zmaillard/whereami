@@ -32,6 +32,10 @@ type ResultDto struct {
 	EcoRegionLevel2          string            `json:"eco_region_level_2"`
 	EcoRegionLevel3          string            `json:"eco_region_level_3"`
 	EcoRegionLevel4          string            `json:"eco_region_level_4"`
+	ForecastPeriod1Name      string            `json:"forecast_period_1_name"`
+	ForecastPeriod2Name      string            `json:"forecast_period_2_name"`
+	ForecastPeriod1Details   string            `json:"forecast_period_1_details"`
+	ForecastPeriod2Details   string            `json:"forecast_period_2_details"`
 }
 
 type TidePredictions struct {
@@ -47,6 +51,13 @@ func (tp TidePredictions) GetStage() string {
 		return "Low"
 	}
 	return tp.Stage
+}
+
+func (d ResultDto) HasEcoRegion() bool {
+	if d.EcoRegionLevel1 == "" {
+		return false
+	}
+	return true
 }
 
 func (d ResultDto) GetFormattedElevation() string {

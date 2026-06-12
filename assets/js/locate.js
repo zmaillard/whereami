@@ -5,6 +5,7 @@ document.addEventListener('alpine:init', () => {
         searchFilter: '',
         mapboxToken: '',
         place: '',
+        abbreviatedPlace: '',
         automaticCoordinates: false,
         showSearch: false,
         isCurrentLocation: true,
@@ -40,6 +41,7 @@ document.addEventListener('alpine:init', () => {
                     .then(r=>{
                         self.isCurrentLocation = true;
                         self.place = self.getPlace(r);
+                        self.abbreviatedPlace = self.getAbbreviatedPlace(r);
                     })
 
             }, (err)=> {
@@ -47,6 +49,12 @@ document.addEventListener('alpine:init', () => {
                 self.showSearch = true;
                 self.isCurrentLocation = false;
             }, this.options);
+        },
+        getAbbreviatedPlace(reverseGeocode) {
+            if (reverseGeocode) {
+                return reverseGeocode.place
+            }
+            return ''
         },
         getPlace(reverseGeocode) {
             if (reverseGeocode) {
@@ -71,7 +79,7 @@ document.addEventListener('alpine:init', () => {
             return `<strong>Current Location</strong>: ${this.latitude}, ${this.longitude}`
         },
         detailsButtonText() {
-            return `Show Details for ${this.place}`
+            return `Show Details for ${this.abbreviatedPlace}`
         },
         search(e) {
             let self = this;
@@ -92,6 +100,7 @@ document.addEventListener('alpine:init', () => {
                             lngInput.value = self.longitude;
 
                             self.place = feature.properties.full_address;
+                            self.abbreviatedPlace = feature.properties.name;
                             self.isCurrentLocation = false;
                         }
 
