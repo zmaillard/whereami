@@ -124,7 +124,6 @@ func (mr *metadataResult) SetResults(dto *templates.ResultDto) {
 	dto.Sunrise = mr.Properties.AstronomicalData.Sunrise
 	dto.Sunset = mr.Properties.AstronomicalData.Sunset
 	dto.TimeZone = mr.Properties.TimeZone
-
 	if len(mr.Forecast.Properties.Periods) >= 2 {
 		dto.ForecastPeriod1Name = mr.Forecast.Properties.Periods[0].Name
 		dto.ForecastPeriod2Name = mr.Forecast.Properties.Periods[1].Name

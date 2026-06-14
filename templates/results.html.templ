@@ -6,9 +6,10 @@ templ Results(content ResultDto) {
             <div class="content">
                 <h3 class="title is-3">Location</h3>
                 <dl class="margins-removed">
-                    <dt>Latitude</dt> <dd>{content.GetLatitude()}</dd>
-                    <dt>Longitude</dt><dd>{content.GetLongitude()}</dd>
-                    <dt>Time Zone</dt> <dd>{content.TimeZone}</dd>
+
+                    <dt>Location </dt> <dd>{content.GetCoordinates()}</dd>
+                    <dt>Time Zone</dt> <dd>{content.FormatTimeZone()}</dd>
+                    <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
                 </dl>
             </div>
         </div>
@@ -18,6 +19,10 @@ templ Results(content ResultDto) {
                 <dl class="margins-removed">
                     <dt>County</dt><dd>{content.County}</dd>
                     <dt>State</dt><dd>{content.State}</dd>
+                    <dt>Congress</dt><dd>{content.CongressionalDistrict}</dd>
+                    if content.PlaceName != "" {
+                    <dt>Place Name</dt><dd>{content.FormatPlaceName()}</dd>
+                    }
                 </dl>
             </div>
         </div>
@@ -40,15 +45,6 @@ templ Results(content ResultDto) {
         </div>
         <div class="cell box">
             <div class="content">
-                <h3 class="title is-3">Topography</h3>
-                <dl class="margins-removed">
-                    <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
-                    <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="cell box">
-            <div class="content">
                 <h3 class="title is-3">Hydrography</h3>
                 <dl class="margins-removed">
                     <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
@@ -64,7 +60,9 @@ templ Results(content ResultDto) {
                         <dt>Level 1</dt><dd>{content.EcoRegionLevel1}</dd>
                         <dt>Level 2</dt><dd>{content.EcoRegionLevel2}</dd>
                         <dt>Level 3</dt><dd>{content.EcoRegionLevel3}</dd>
-                        <dt>Level 4</dt><dd>{content.EcoRegionLevel4}</dd>
+                        if content.EcoRegionLevel4 != "" {
+                            <dt>Level 4</dt><dd>{content.EcoRegionLevel4}</dd>
+                        }
                     </dl>
                 </div>
             </div>
@@ -88,5 +86,19 @@ templ Results(content ResultDto) {
                 </div>
             </div>
         }
+        <div class="cell box">
+            <div class="content">
+                <h3 class="title is-3">Nearby Features</h3>
+                <dl class="margins-removed">
+                    <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
+                    if content.NextLargestCity != "" {
+                    <dt>Nearest Larger City</dt><dd>{content.FormatNearestLargestCity()}</dd>
+                    }
+                    if content.NationalPark != "" {
+                    <dt>Nearest National Park</dt><dd>{content.FormatNationalPark()}</dd>
+                    }
+                </dl>
+            </div>
+        </div>
     </div>
 }

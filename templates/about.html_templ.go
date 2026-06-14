@@ -45,7 +45,7 @@ func About(content AboutDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section><div class=\"container content\"><div class=\"content\"><h1>Where Am I?</h1><h1>In These United States</h1><p>A website to find information about your current location</p><h2>Data Sources</h2><ul><li>Weather</li><li>Tides</li><li>Elevation</li><li>Ecoregions</li><li>Hydrography</li></ul></div></div></section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section><div class=\"container content\"><div class=\"content\"><h1>Where Am I?</h1><p>Where Am I (In These United States).  A website to find information about your current location</p><h2>Data Sources</h2><ul><li>Weather - <a href=\"https://www.weather.gov/documentation/services-web-api\">National Weather Service Web API</a></li><li>Tides - <a href=\"https://tidesandcurrents.noaa.gov\">Tides and Currents Web API</a></li><li>Elevation</li><li>Ecoregions <a href=\"https://www.epa.gov/eco-research/level-iii-and-iv-ecoregions-continental-united-states\">US Environmental Protection Agency</a></li><li>Hydrography - <a href=\"https://www.usgs.gov/national-hydrography/watershed-boundary-dataset\">USGS Watershed Boundary Dataset</a></li></ul></div></div></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
