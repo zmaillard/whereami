@@ -44,7 +44,7 @@ func (d *Database) GetEcoregions(coords models.Coordinates) (models.Result, erro
 	var level4USCode, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key string
 	if err := row.Scan(&level4USCode, &us_l4name, &us_l3code, &us_l3name, &na_l3code, &na_l3name, &na_l2code, &na_l2name, &na_l1code, &na_l1name, &l4_key, &l3_key, &l2_key, &l1_key); err != nil {
 		slog.Error(err.Error())
-		return nil, err
+		return d.getAlaskaEcoregions(coords)
 	}
 
 	eco := ecoregions{
@@ -65,5 +65,26 @@ func (d *Database) GetEcoregions(coords models.Coordinates) (models.Result, erro
 	}
 
 	slog.Info("Found Ecoregions", eco.String())
+	return eco, nil
+}
+
+func (d *Database) getAlaskaEcoregions(coords models.Coordinates) (models.Result, error) {
+
+	slog.Info("Getting alaska ecoregions for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
+	query := fmt.Sprintf("SELECT NA_L1KEY, NA_L2KEY, NA_L3KEY FROM ecoregions_alaska WHERE ST_CONTAINS(geom,%s)", models.GeomStringFromCoordinate(coords))
+
+	row := d.db.QueryRow(query)
+	var level1key, level2key, level3key string
+	if err := row.Scan(&level1key, &level2key, &level3key); err != nil {
+		slog.Error(err.Error())
+		return nil, err
+	}
+
+	eco := ecoregions{
+		Level1Key: level1key,
+		Level2Key: level2key,
+		Level3Key: level3key,
+	}
+	slog.Info("Found Alaska Ecoregions", eco.String())
 	return eco, nil
 }

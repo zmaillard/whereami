@@ -19,7 +19,7 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 			return err
 		}
 
-		ops := []models.Querier{database.GetCounty, database.GetEcoregions, database.GetElevation(httpClient), database.GetWeather(httpClient), database.GetTides(httpClient), database.GetStream}
+		ops := []models.Querier{database.GetCounty, database.GetNationalPark, database.GetCongressionalDistrict, database.GetPlace, database.GetEcoregions, database.GetElevation(httpClient), database.GetWeather(httpClient), database.GetTides(httpClient), database.GetStream}
 		ch := make(chan models.Result, len(ops))
 		for _, query := range ops {
 			go func() {

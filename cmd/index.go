@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/zmaillard/whereami/config"
+	"github.com/zmaillard/whereami/queries"
 )
 
 type Node struct {
@@ -32,6 +33,10 @@ func (n Node) IsLeaf() bool {
 // For each root - load up descendants
 //
 
+func init() {
+	queries.RegisterExtensions()
+}
+
 func main() {
 
 	cfg, err := config.NewConfigWithVersion("0.0.0")
@@ -39,7 +44,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("%s?_journal_mode=WAL", cfg.DbPath))
+	db, err := sql.Open("spatialite", fmt.Sprintf("%s?_journal_mode=WAL", cfg.DbPath))
 	if err != nil {
 		panic(err)
 	}
@@ -82,9 +87,15 @@ func main() {
 		}
 		fmt.Println(len(nodes))
 	*/
-	err = buildIndicies(db)
+
+	//	err = buildIndicies(db)
+	//	if err != nil {
+	//		fmt.Println(err)
+	//	}
+
+	err = buildClosestCity(db)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 }
 
@@ -174,4 +185,42 @@ func buildIndicies(db *sql.DB) error {
 	query = "CREATE INDEX hucclosure_parenthuc_index on hucclosure (parenthuc)"
 	_, err = db.Exec(query)
 	return err
+}
+
+func buildClosestCity(db *sql.DB) error {
+	query := "SELECT fid from incorporated_place"
+	rows, err := db.Query(query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		if err != nil {
+			return err
+		}
+		next_largest := fmt.Sprintf(`WITH cur_city AS (
+		select incorporated_place.shape, POPULATION from main.incorporated_place where fid = %v 
+			)
+		
+			select i.fid, ST_distance(i.shape, c.shape) as d from incorporated_place i
+				CROSS JOIN cur_city c
+				where i.POPULATION > (select cur_city.POPULATION FROM cur_city LIMIT 1)
+					order by d limit 1`, id)
+		nextLargestRow := db.QueryRow(next_largest)
+
+		var nextLargest int
+		var distance float64
+		err = nextLargestRow.Scan(&nextLargest, &distance)
+		if err == nil {
+			_, err = db.Exec("UPDATE incorporated_place SET next_largest_incorporated_place = ? WHERE fid = ?", nextLargest, id)
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

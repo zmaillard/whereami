@@ -32,7 +32,7 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 	}
 
 	summitIndex := results[0].(*summitIndex)
-	query := fmt.Sprintf(`SELECT feature_name, elevation, Distance(geom, %s, 1 ) / 1000.0 AS dist_km 
+	query := fmt.Sprintf(`SELECT feature_name, elevation,   CvtToUsMi(Distance(geom, %s, 1 )) AS dist_m
 		FROM gnis
 		WHERE feature_id = %v`, models.GeomStringFromCoordinate(coords), summitIndex.Feature_id)
 
