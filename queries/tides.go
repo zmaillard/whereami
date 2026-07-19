@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zmaillard/whereami/metrics"
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
 )
@@ -90,11 +91,21 @@ func (d *Database) GetTides(client *http.Client) models.Querier {
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
+
+		// Record API call metrics for tide predictions
+		start := time.Now()
 		res, err := client.Do(req)
+		duration := time.Since(start).Seconds()
+
 		if err != nil {
 			slog.Error("Error getting response", "err", err)
+			metrics.RecordAPICallError("noaa_tides")
+			metrics.RecordAPICallDuration("noaa_tides", duration)
 			return nil, err
 		}
+		metrics.RecordAPICallSuccess("noaa_tides")
+		metrics.RecordAPICallDuration("noaa_tides", duration)
+
 		defer res.Body.Close()
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
@@ -130,11 +141,21 @@ func getTimeZoneOffsetOfStation(client *http.Client, station string) (int, strin
 		return -1, "", err
 	}
 	req.Header.Add("accept", "application/json")
+
+	// Record API call metrics for station metadata
+	start := time.Now()
 	res, err := client.Do(req)
+	duration := time.Since(start).Seconds()
+
 	if err != nil {
 		slog.Error("Error getting response", "err", err)
+		metrics.RecordAPICallError("noaa_tides")
+		metrics.RecordAPICallDuration("noaa_tides", duration)
 		return -1, "", err
 	}
+	metrics.RecordAPICallSuccess("noaa_tides")
+	metrics.RecordAPICallDuration("noaa_tides", duration)
+
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {

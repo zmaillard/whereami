@@ -6,7 +6,9 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"time"
 
+	"github.com/zmaillard/whereami/metrics"
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
 )
@@ -29,11 +31,21 @@ func (d *Database) GetElevation(client *http.Client) models.Querier {
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
+
+		// Record API call metrics
+		start := time.Now()
 		res, err := client.Do(req)
+		duration := time.Since(start).Seconds()
+
 		if err != nil {
 			slog.Error(err.Error())
+			metrics.RecordAPICallError("usgs_elevation")
+			metrics.RecordAPICallDuration("usgs_elevation", duration)
 			return nil, err
 		}
+		metrics.RecordAPICallSuccess("usgs_elevation")
+		metrics.RecordAPICallDuration("usgs_elevation", duration)
+
 		defer res.Body.Close()
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
