@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/zmaillard/whereami/config"
 	"github.com/zmaillard/whereami/handlers"
+	"github.com/zmaillard/whereami/metrics"
 	"github.com/zmaillard/whereami/middleware"
 	"github.com/zmaillard/whereami/queries"
 )
@@ -61,6 +62,9 @@ func main() {
 	}
 
 	httpClient := NewSecureClient()
+
+	// Initialize custom Prometheus metrics
+	metrics.Init()
 
 	e := echo.New()
 	e.Use(echoprometheus.NewMiddleware("whereami"))

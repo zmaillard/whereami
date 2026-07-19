@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/zmaillard/whereami/metrics"
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
 )
@@ -142,11 +143,21 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
+
+		// Record API call metrics for weather metadata
+		start := time.Now()
 		res, err := client.Do(req)
+		duration := time.Since(start).Seconds()
+
 		if err != nil {
 			slog.Error("Error getting weather metadata", "err", err)
+			metrics.RecordAPICallError("nws_weather")
+			metrics.RecordAPICallDuration("nws_weather", duration)
 			return nil, err
 		}
+		metrics.RecordAPICallSuccess("nws_weather")
+		metrics.RecordAPICallDuration("nws_weather", duration)
+
 		defer res.Body.Close()
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
@@ -167,11 +178,21 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 			return nil, err
 		}
 		req.Header.Add("accept", "application/json")
+
+		// Record API call metrics for weather forecast
+		start = time.Now()
 		res, err = client.Do(req)
+		duration = time.Since(start).Seconds()
+
 		if err != nil {
 			slog.Error("Error getting weather forecast", "err", err)
+			metrics.RecordAPICallError("nws_weather")
+			metrics.RecordAPICallDuration("nws_weather", duration)
 			return nil, err
 		}
+		metrics.RecordAPICallSuccess("nws_weather")
+		metrics.RecordAPICallDuration("nws_weather", duration)
+
 		defer res.Body.Close()
 		body, err = io.ReadAll(res.Body)
 		if err != nil {

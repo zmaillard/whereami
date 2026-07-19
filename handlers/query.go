@@ -19,7 +19,17 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 			return err
 		}
 
-		ops := []models.Querier{database.GetCounty, database.GetNationalPark, database.GetCongressionalDistrict, database.GetPlace, database.GetEcoregions, database.GetElevation(httpClient), database.GetWeather(httpClient), database.GetTides(httpClient), database.GetStream}
+		ops := []models.Querier{
+			queries.InstrumentQuery("county", database.GetCounty),
+			queries.InstrumentQuery("nationalpark", database.GetNationalPark),
+			queries.InstrumentQuery("congress", database.GetCongressionalDistrict),
+			queries.InstrumentQuery("place", database.GetPlace),
+			queries.InstrumentQuery("ecoregion", database.GetEcoregions),
+			queries.InstrumentQuery("elevation", database.GetElevation(httpClient)),
+			queries.InstrumentQuery("weather", database.GetWeather(httpClient)),
+			queries.InstrumentQuery("tides", database.GetTides(httpClient)),
+			queries.InstrumentQuery("stream", database.GetStream),
+		}
 		ch := make(chan models.Result, len(ops))
 		for _, query := range ops {
 			go func() {
