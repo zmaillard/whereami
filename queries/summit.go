@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/dhconnelly/rtreego"
@@ -32,15 +31,20 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 	}
 
 	summitIndex := results[0].(*summitIndex)
-	query := fmt.Sprintf(`SELECT feature_name, elevation,   CvtToUsMi(Distance(geom, %s, 1 )) AS dist_m
-		FROM gnis
-		WHERE feature_id = %v`, models.GeomStringFromCoordinate(coords), summitIndex.Feature_id)
 
-	row := d.db.QueryRow(query)
+	stmt, err := d.db.Prepare(`SELECT feature_name, elevation,   CvtToUsMi(Distance(geom, ST_POINT(?,?), 1 )) AS dist_m
+		FROM gnis
+		WHERE feature_id = ?`)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
 	var name string
 	var elevation, distance float64
-	if err := row.Scan(&name, &elevation, &distance); err != nil {
-		slog.Warn("Error getting summit results", "query", query, "err", err)
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude(), summitIndex.Feature_id).Scan(&name, &elevation, &distance)
+	if err != nil {
+		slog.Warn("Error getting summit results", "query", stmt, "err", err)
 		return nil, err
 	}
 
@@ -50,25 +54,29 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 
 func (d *Database) LoadSummitTree() error {
 	slog.Info("Loading summit tree")
-	query := fmt.Sprintf("SELECT ST_X(geom), ST_Y(geom), feature_id, elevation FROM gnis where feature_class='Summit' and elevation is not null")
+	stmt, err := d.db.Prepare("SELECT ST_X(geom), ST_Y(geom), feature_id, elevation FROM gnis where feature_class='Summit' and elevation is not null")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
 
 	d.rt = rtreego.NewTree(2, 25, 50)
 
-	rows, err := d.db.Query(query)
+	rows, err := stmt.Query()
 	if err != nil {
-		slog.Error("Error loading summit tree", "query", query, "err", err)
+		slog.Error("Error loading summit tree", "query", stmt, "err", err)
 		return err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var x, y, elevation float64
-		var feature_id int
-		if err := rows.Scan(&x, &y, &feature_id, &elevation); err != nil {
-			slog.Error("Error loading summit tree", "query", query, "err", err)
+		var featureId int
+		if err := rows.Scan(&x, &y, &featureId, &elevation); err != nil {
+			slog.Error("Error loading summit tree", "query", stmt, "err", err)
 			return err
 		}
 
-		d.rt.Insert(&summitIndex{rtreego.Point{x, y}, elevation, feature_id})
+		d.rt.Insert(&summitIndex{rtreego.Point{x, y}, elevation, featureId})
 	}
 
 	slog.Info("Loaded summit tree")

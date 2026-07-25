@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/zmaillard/whereami/models"
@@ -18,11 +17,15 @@ func (c congressionalDistrict) SetResults(dto *templates.ResultDto) {
 
 func (d *Database) GetCongressionalDistrict(coords models.Coordinates) (models.Result, error) {
 	slog.Info("Getting congressional district for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	query := fmt.Sprintf("SELECT name FROM congressional_district WHERE ST_CONTAINS(geometry, %s)", models.GeomStringFromCoordinate(coords))
+	stmt, err := d.db.Prepare("SELECT name FROM congressional_district WHERE ST_CONTAINS(geometry, ST_Point(?, ?))")
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
 
-	row := d.db.QueryRow(query)
 	var name string
-	if err := row.Scan(&name); err != nil {
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&name)
+	if err != nil {
 		slog.Error(err.Error())
 		return nil, err
 	}

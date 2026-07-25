@@ -52,14 +52,10 @@ type Database struct {
 }
 
 func NewDatabase(cfg *config.Config) (*Database, error) {
-	db, err := sql.Open("spatialite", cfg.DbPath)
+	db, err := sql.Open("spatialite", fmt.Sprintf("%s?cache=shared&_stmt_cache_size=20&mode=ro", cfg.DbPath))
 	if err != nil {
 		return nil, err
 	}
-
-	db.SetMaxOpenConns(1)
-	db.SetMaxIdleConns(1)
-	db.SetConnMaxLifetime(0)
 
 	if err := db.Ping(); err != nil {
 		return nil, err

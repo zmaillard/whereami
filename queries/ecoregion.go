@@ -38,11 +38,15 @@ func (e ecoregions) SetResults(dto *templates.ResultDto) {
 
 func (d *Database) GetEcoregions(coords models.Coordinates) (models.Result, error) {
 	slog.Info("Getting ecoregions for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	query := fmt.Sprintf("SELECT us_l4code, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key FROM ecoregions WHERE ST_CONTAINS(geometry,%s)", models.GeomStringFromCoordinate(coords))
+	stmt, err := d.db.Prepare("SELECT us_l4code, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key FROM ecoregions WHERE ST_CONTAINS(geometry,ST_POINT(?,?))")
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
 
-	row := d.db.QueryRow(query)
 	var level4USCode, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key string
-	if err := row.Scan(&level4USCode, &us_l4name, &us_l3code, &us_l3name, &na_l3code, &na_l3name, &na_l2code, &na_l2name, &na_l1code, &na_l1name, &l4_key, &l3_key, &l2_key, &l1_key); err != nil {
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&level4USCode, &us_l4name, &us_l3code, &us_l3name, &na_l3code, &na_l3name, &na_l2code, &na_l2name, &na_l1code, &na_l1name, &l4_key, &l3_key, &l2_key, &l1_key)
+	if err != nil {
 		slog.Error(err.Error())
 		return d.getAlaskaEcoregions(coords)
 	}
@@ -71,11 +75,15 @@ func (d *Database) GetEcoregions(coords models.Coordinates) (models.Result, erro
 func (d *Database) getAlaskaEcoregions(coords models.Coordinates) (models.Result, error) {
 
 	slog.Info("Getting alaska ecoregions for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	query := fmt.Sprintf("SELECT NA_L1KEY, NA_L2KEY, NA_L3KEY FROM ecoregions_alaska WHERE ST_CONTAINS(geom,%s)", models.GeomStringFromCoordinate(coords))
+	stmt, err := d.db.Prepare("SELECT NA_L1KEY, NA_L2KEY, NA_L3KEY FROM ecoregions_alaska WHERE ST_CONTAINS(geom,ST_POINT(?,?))")
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
 
-	row := d.db.QueryRow(query)
 	var level1key, level2key, level3key string
-	if err := row.Scan(&level1key, &level2key, &level3key); err != nil {
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&level1key, &level2key, &level3key)
+	if err != nil {
 		slog.Error(err.Error())
 		return nil, err
 	}
