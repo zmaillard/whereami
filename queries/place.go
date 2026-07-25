@@ -40,7 +40,7 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 	var nextLargestPlaceId *int
 	var distance float64
 	var p place
-	err = incorpStmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&name, &nextLargestPlaceId) //, &nextLargestPlaceName, &nextLargestPlaceState, &distance)
+	err = incorpStmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&name, &nextLargestPlaceId)
 	if err == nil {
 		slog.Info("Found incorporated place", "name", name)
 
