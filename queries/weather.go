@@ -207,9 +207,14 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 		}
 		value.Forecast = forecast
 
-		query := d.db.QueryRow("SELECT name FROM nwsoffice WHERE code = ?", value.Properties.Cwa)
+		stmt, err := d.db.Prepare("SELECT name FROM nwsoffice WHERE code = ?")
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
+
 		var officeName string
-		err = query.Scan(&officeName)
+		err = stmt.QueryRow(value.Properties.Cwa).Scan(&officeName)
 		if err == nil {
 			value.OfficeName = officeName
 		} else {

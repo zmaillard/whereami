@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"fmt"
 	"log/slog"
 	"strings"
 
@@ -21,21 +20,28 @@ func (w *watersheds) SetResults(dto *templates.ResultDto) {
 
 func (d *Database) GetStream(coords models.Coordinates) (models.Result, error) {
 	slog.Info("Getting stream for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	query := fmt.Sprintf("SELECT huc12 FROM wbdhu12 WHERE ST_CONTAINS(shape,%s)", models.GeomStringFromCoordinate(coords))
+	stmt, err := d.db.Prepare("SELECT huc12 FROM wbdhu12 WHERE ST_CONTAINS(shape,ST_POINT(?,?))")
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
 
-	row := d.db.QueryRow(query)
 	var huc12 string
-	if err := row.Scan(&huc12); err != nil {
-		slog.Error(err.Error())
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&huc12)
+	if err != nil {
 		return nil, err
 	}
 
-	baseQuery := `select WBDHU12.name
+	closureStmt, err := d.db.Prepare(`select WBDHU12.name
 		from hucclosure
 		inner join WBDHU12 on childhuc = WBDHU12.huc12
-		where parenthuc = ? order by depth;`
+		where parenthuc = ? order by depth;`)
+	if err != nil {
+		return nil, err
+	}
+	defer closureStmt.Close()
 
-	rows, err := d.db.Query(baseQuery, huc12)
+	rows, err := closureStmt.Query(huc12)
 	if err != nil {
 		return nil, err
 	}

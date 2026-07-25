@@ -61,17 +61,18 @@ func (t tide) SetResults(dto *templates.ResultDto) {
 func (d *Database) GetTides(client *http.Client) models.Querier {
 	return func(coordinates models.Coordinates) (models.Result, error) {
 		slog.Info("Getting tide station for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
-		queryRaw := `select b.id,b.name,b.state, a.distance_m / 1000.0 as dist_km
-		from knn2 a JOIN tidestations AS b ON (b.ogc_fid = a.fid)
-		where f_table_name = 'tidestations' and ref_geometry = MakePoint(%v,%v) and radius = 1.0 and max_items = 1`
+		stmt, err := d.db.Prepare(`select b.id,b.name,b.state, a.distance_m / 1000.0 as dist_km
+			from knn2 a JOIN tidestations AS b ON (b.ogc_fid = a.fid)
+			where f_table_name = 'tidestations' and ref_geometry = MakePoint(?,?) and radius = 1.0 and max_items = 1`)
+		if err != nil {
+			return nil, err
+		}
+		defer stmt.Close()
 
-		query := fmt.Sprintf(queryRaw, coordinates.Longitude(), coordinates.Latitude())
-
-		row := d.db.QueryRow(query)
 		var station, stationId, state string
 		var distance float64
-		if err := row.Scan(&stationId, &station, &state, &distance); err != nil {
-			slog.Error("Error getting station", "err", err)
+		err = stmt.QueryRow(coordinates.Longitude(), coordinates.Latitude()).Scan(&stationId, &station, &state, &distance)
+		if err != nil {
 			return &tide{HasTide: false}, nil
 		}
 

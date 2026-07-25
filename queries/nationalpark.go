@@ -1,7 +1,6 @@
 package queries
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/zmaillard/whereami/models"
@@ -20,19 +19,21 @@ func (c nationalPark) SetResults(dto *templates.ResultDto) {
 
 func (d *Database) GetNationalPark(coords models.Coordinates) (models.Result, error) {
 	slog.Info("Getting nearest national park for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	queryRaw := `select b.name, CvtToUsMi(a.distance_m) as dist_miles
+	stmt, err := d.db.Prepare(`select b.name, CvtToUsMi(a.distance_m) as dist_miles
 		from knn2 a JOIN national_park_service AS b ON (b.fid = a.fid)
-		where f_table_name = 'national_park_service' and ref_geometry = MakePoint(%v,%v) and radius = 2.0 and max_items = 1 AND expand = 1;`
-
-	query := fmt.Sprintf(queryRaw, coords.Longitude(), coords.Latitude())
-
-	row := d.db.QueryRow(query)
-	var name string
-	var distance float64
-	if err := row.Scan(&name, &distance); err != nil {
-		slog.Error(err.Error())
+		where f_table_name = 'national_park_service' and ref_geometry = MakePoint(?,?) and radius = 2.0 and max_items = 1 AND expand = 1;`)
+	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
+
+	var name string
+	var distance float64
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&name, &distance)
+	if err != nil {
+		return nil, err
+	}
+
 	slog.Info("Found nearest national park", "name", name)
 	return &nationalPark{Name: name, Distance: distance}, nil
 }

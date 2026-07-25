@@ -30,7 +30,7 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 			queries.InstrumentQuery("tides", database.GetTides(httpClient)),
 			queries.InstrumentQuery("stream", database.GetStream),
 		}
-		ch := make(chan models.Result, 2)
+		ch := make(chan models.Result, 1)
 		for _, query := range ops {
 			go func() {
 				res, err := query(coords)
