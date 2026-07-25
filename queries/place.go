@@ -36,20 +36,6 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 	}
 	defer incorpStmt.Close()
 
-	/*
-
-
-		SELECT ip.PLACE_NAME, ip.STATE_NAME, ip.next_largest_incorporated_place --, nlip.PLACE_NAME, nlip.STATE_NAME, CvtToUsMi(Distance(ip.shape,nlip.shape, 1 )) AS dist_m
-		FROM incorporated_place ip --LEFT OUTER JOIN incorporated_place nlip
-		--ON ip.next_largest_incorporated_place = nlip.fid
-		    WHERE ST_CONTAINS(ip.shape, ST_Point(-116.2023, 43.6150)) = 1
-		AND ip.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name = 'incorporated_place' AND search_frame = ST_Point(-116.2023, 43.6150))
-
-		SELECT  nlip.PLACE_NAME, nlip.STATE_NAME, CvtToUsMi(Distance(ST_POINT(-116.2023,43.6150),nlip.shape, 1 )) AS dist_m
-		FROM incorporated_place nlip
-		where nlip.fid = 11650
-	*/
-
 	var name, nextLargestPlaceName, nextLargestPlaceState string
 	var nextLargestPlaceId *int
 	var distance float64
