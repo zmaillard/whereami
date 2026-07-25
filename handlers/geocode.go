@@ -14,7 +14,7 @@ func Geocode(database *queries.Database) echo.HandlerFunc {
 			return err
 		}
 
-		res, err := database.ReverseGeocode(coords)
+		res, err := database.ReverseGeocode(c.Request().Context(), coords)
 		if err != nil {
 			return err
 		}

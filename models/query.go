@@ -1,3 +1,5 @@
 package models
 
-type Querier func(coordinates Coordinates) (Result, error)
+import "context"
+
+type Querier func(ctx context.Context, coordinates Coordinates) (Result, error)

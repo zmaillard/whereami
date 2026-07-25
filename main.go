@@ -49,13 +49,16 @@ func main() {
 		panic(err)
 	}
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	database, err := queries.NewDatabase(cfg)
 	if err != nil {
 		logger.Error("failed to init database", "error", err)
 		panic(err)
 	}
 
-	err = database.LoadSummitTree()
+	err = database.LoadSummitTree(ctx)
 	if err != nil {
 		logger.Error("failed to init build summit index", "error", err)
 		panic(err)
@@ -75,8 +78,6 @@ func main() {
 			e.Logger.Error("failed to start metrics server", "error", err)
 		}
 	}()
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 
 	sc := echo.StartConfig{
 		Address:         "0.0.0.0:8080",

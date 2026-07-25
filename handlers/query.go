@@ -19,6 +19,7 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 			return err
 		}
 
+		ctx := c.Request().Context()
 		ops := []models.Querier{
 			queries.InstrumentQuery("county", database.GetCounty),
 			queries.InstrumentQuery("nationalpark", database.GetNationalPark),
@@ -33,7 +34,7 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 		ch := make(chan models.Result, 1)
 		for _, query := range ops {
 			go func() {
-				res, err := query(coords)
+				res, err := query(ctx, coords)
 				if err != nil {
 					fmt.Println(err)
 				}

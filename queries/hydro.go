@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"log/slog"
 	"strings"
 
@@ -18,21 +19,22 @@ func (w *watersheds) SetResults(dto *templates.ResultDto) {
 	dto.CurrentHuc = w.CurrentHuc
 }
 
-func (d *Database) GetStream(coords models.Coordinates) (models.Result, error) {
+func (d *Database) GetStream(ctx context.Context, coords models.Coordinates) (models.Result, error) {
 	slog.Info("Getting stream for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	stmt, err := d.db.Prepare("SELECT huc12 FROM wbdhu12 WHERE ST_CONTAINS(shape,ST_POINT(?,?))")
+	stmt, err := d.db.PrepareContext(ctx, `SELECT h.huc12 FROM wbdhu12 h WHERE ST_CONTAINS(h.shape,ST_POINT(?,?))
+		AND h.ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name = 'wbdhu12' AND search_frame = ST_Point(?,?))`)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
 	var huc12 string
-	err = stmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&huc12)
+	err = stmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&huc12)
 	if err != nil {
 		return nil, err
 	}
 
-	closureStmt, err := d.db.Prepare(`select WBDHU12.name
+	closureStmt, err := d.db.PrepareContext(ctx, `select WBDHU12.name
 		from hucclosure
 		inner join WBDHU12 on childhuc = WBDHU12.huc12
 		where parenthuc = ? order by depth;`)

@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -134,7 +135,7 @@ func (mr *metadataResult) SetResults(dto *templates.ResultDto) {
 }
 
 func (d *Database) GetWeather(client *http.Client) models.Querier {
-	return func(coordinates models.Coordinates) (models.Result, error) {
+	return func(ctx context.Context, coordinates models.Coordinates) (models.Result, error) {
 		slog.Info("Getting weather metadata for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
 		url := fmt.Sprintf("https://api.weather.gov/points/%v,%v", coordinates.Latitude(), coordinates.Longitude())
 		req, err := http.NewRequest("GET", url, nil)
@@ -207,7 +208,7 @@ func (d *Database) GetWeather(client *http.Client) models.Querier {
 		}
 		value.Forecast = forecast
 
-		stmt, err := d.db.Prepare("SELECT name FROM nwsoffice WHERE code = ?")
+		stmt, err := d.db.PrepareContext(ctx, "SELECT name FROM nwsoffice WHERE code = ?")
 		if err != nil {
 			return nil, err
 		}
