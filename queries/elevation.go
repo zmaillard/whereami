@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,7 +23,7 @@ func (er *elevationResponse) SetResults(dto *templates.ResultDto) {
 }
 
 func (d *Database) GetElevation(client *http.Client) models.Querier {
-	return func(coordinates models.Coordinates) (models.Result, error) {
+	return func(ctx context.Context, coordinates models.Coordinates) (models.Result, error) {
 		slog.Info("Getting elevation for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
 		url := fmt.Sprintf("https://epqs.nationalmap.gov/v1/json?x=%v&y=%v&wkid=4326&units=Feet&includeDate=false", coordinates.Longitude(), coordinates.Latitude())
 		req, err := http.NewRequest("GET", url, nil)
@@ -61,6 +62,6 @@ func (d *Database) GetElevation(client *http.Client) models.Querier {
 		}
 
 		slog.Info("Found Elevation")
-		return d.GetNearestSummit(coordinates, value.Value)
+		return d.GetNearestSummit(ctx, coordinates, value.Value)
 	}
 }

@@ -28,6 +28,10 @@ type Coordinates struct {
 	Lng float64 `form:"lng"`
 }
 
+func (c *Coordinates) AsSpatialIndexQueryParameter() (float64, float64, float64, float64) {
+	return c.Lng, c.Lat, c.Lng, c.Lat
+}
+
 func (c *Coordinates) Latitude() float64 {
 	return c.Lat
 }

@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"time"
 
 	"github.com/zmaillard/whereami/metrics"
@@ -16,11 +17,11 @@ import (
 //
 //	instrumented := queries.InstrumentQuery("county", database.GetCounty)
 func InstrumentQuery(queryType string, querier models.Querier) models.Querier {
-	return func(coordinates models.Coordinates) (models.Result, error) {
+	return func(ctx context.Context, coordinates models.Coordinates) (models.Result, error) {
 		start := time.Now()
 
 		// Execute the actual query
-		result, err := querier(coordinates)
+		result, err := querier(ctx, coordinates)
 
 		// Record metrics
 		duration := time.Since(start).Seconds()

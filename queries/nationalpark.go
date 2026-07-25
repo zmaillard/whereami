@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/zmaillard/whereami/models"
@@ -17,9 +18,9 @@ func (c nationalPark) SetResults(dto *templates.ResultDto) {
 	dto.NationalParkDistance = c.Distance
 }
 
-func (d *Database) GetNationalPark(coords models.Coordinates) (models.Result, error) {
+func (d *Database) GetNationalPark(ctx context.Context, coords models.Coordinates) (models.Result, error) {
 	slog.Info("Getting nearest national park for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude())
-	stmt, err := d.db.Prepare(`select b.name, CvtToUsMi(a.distance_m) as dist_miles
+	stmt, err := d.db.PrepareContext(ctx, `select b.name, CvtToUsMi(a.distance_m) as dist_miles
 		from knn2 a JOIN national_park_service AS b ON (b.fid = a.fid)
 		where f_table_name = 'national_park_service' and ref_geometry = MakePoint(?,?) and radius = 2.0 and max_items = 1 AND expand = 1;`)
 	if err != nil {

@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/dhconnelly/rtreego"
@@ -22,7 +23,7 @@ func (s *Summit) SetResults(dto *templates.ResultDto) {
 	dto.Elevation = s.CurrentElevation
 }
 
-func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation float64) (models.Result, error) {
+func (d *Database) GetNearestSummit(ctx context.Context, coords models.Coordinates, filterElevation float64) (models.Result, error) {
 	slog.Info("Getting nearest summit for coordinates", "latitude", coords.Latitude(), "longitude", coords.Longitude(), "filterElevation", filterElevation)
 	results := d.rt.NearestNeighbors(1, rtreego.Point{coords.Longitude(), coords.Latitude()}, elevationFilter(filterElevation))
 	if len(results) == 0 {
@@ -32,7 +33,7 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 
 	summitIndex := results[0].(*summitIndex)
 
-	stmt, err := d.db.Prepare(`SELECT feature_name, elevation,   CvtToUsMi(Distance(geom, ST_POINT(?,?), 1 )) AS dist_m
+	stmt, err := d.db.PrepareContext(ctx, `SELECT feature_name, elevation,   CvtToUsMi(Distance(geom, ST_POINT(?,?), 1 )) AS dist_m
 		FROM gnis
 		WHERE feature_id = ?`)
 	if err != nil {
@@ -52,9 +53,9 @@ func (d *Database) GetNearestSummit(coords models.Coordinates, filterElevation f
 	return &Summit{Name: name, Elevation: elevation, Distance: distance, CurrentElevation: filterElevation}, nil
 }
 
-func (d *Database) LoadSummitTree() error {
+func (d *Database) LoadSummitTree(ctx context.Context) error {
 	slog.Info("Loading summit tree")
-	stmt, err := d.db.Prepare("SELECT ST_X(geom), ST_Y(geom), feature_id, elevation FROM gnis where feature_class='Summit' and elevation is not null")
+	stmt, err := d.db.PrepareContext(ctx, "SELECT ST_X(geom), ST_Y(geom), feature_id, elevation FROM gnis where feature_class='Summit' and elevation is not null")
 	if err != nil {
 		return err
 	}

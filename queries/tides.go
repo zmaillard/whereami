@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -59,9 +60,9 @@ func (t tide) SetResults(dto *templates.ResultDto) {
 }
 
 func (d *Database) GetTides(client *http.Client) models.Querier {
-	return func(coordinates models.Coordinates) (models.Result, error) {
+	return func(ctx context.Context, coordinates models.Coordinates) (models.Result, error) {
 		slog.Info("Getting tide station for coordinates", "latitude", coordinates.Latitude(), "longitude", coordinates.Longitude())
-		stmt, err := d.db.Prepare(`select b.id,b.name,b.state, a.distance_m / 1000.0 as dist_km
+		stmt, err := d.db.PrepareContext(ctx, `select b.id,b.name,b.state, a.distance_m / 1000.0 as dist_km
 			from knn2 a JOIN tidestations AS b ON (b.ogc_fid = a.fid)
 			where f_table_name = 'tidestations' and ref_geometry = MakePoint(?,?) and radius = 1.0 and max_items = 1`)
 		if err != nil {
