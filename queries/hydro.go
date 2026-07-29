@@ -7,6 +7,7 @@ import (
 
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
+	"github.com/zmaillard/whereami/util"
 )
 
 type watersheds struct {
@@ -29,7 +30,7 @@ func (d *Database) GetStream(ctx context.Context, coords models.Coordinates) (mo
 	defer stmt.Close()
 
 	var huc12 string
-	err = stmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&huc12)
+	err = stmt.QueryRow(util.AsSpatialIndexQueryParameter(coords)).Scan(&huc12)
 	if err != nil {
 		return nil, err
 	}

@@ -15,6 +15,14 @@ func Index(cfg *config.Config) echo.HandlerFunc {
 	}
 }
 
+func Map(cfg *config.Config) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		return util.RenderView(c, templates.Map(templates.MapDto{
+			BaseDto: templates.BaseDto{VersionNumber: cfg.VersionNumber, MapboxToken: cfg.MapboxToken},
+		}))
+	}
+}
+
 func About(cfg *config.Config) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		return util.RenderView(c, templates.About(templates.AboutDto{
@@ -26,10 +34,6 @@ func About(cfg *config.Config) echo.HandlerFunc {
 type Coordinates struct {
 	Lat float64 `form:"lat"`
 	Lng float64 `form:"lng"`
-}
-
-func (c *Coordinates) AsSpatialIndexQueryParameter() (float64, float64, float64, float64) {
-	return c.Lng, c.Lat, c.Lng, c.Lat
 }
 
 func (c *Coordinates) Latitude() float64 {

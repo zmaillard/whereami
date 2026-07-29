@@ -2,6 +2,7 @@ package templates
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -44,6 +45,37 @@ type ResultDto struct {
 	NationalPark             string            `json:"national_park"`
 	NationalParkDistance     float64           `json:"national_park_distance"`
 	NextLargestCityDistance  float64           `json:"next_largest_city_distance"`
+	AQI                      []AQI             `json:"aqi"`
+}
+
+type AQI struct {
+	Type       string
+	Value      int
+	Category   string
+	Agency     string
+	DateIssued time.Time
+	DateValid  time.Time
+}
+
+func (a AQI) Details() string {
+	if a.Value == -1 {
+		return a.Category
+	}
+	return fmt.Sprintf("%v (%s)", a.Value, a.Category)
+}
+
+func (a AQI) ForecastPeriod() string {
+	return a.DateValid.Format("2006-01-02")
+}
+
+func (d ResultDto) AQIAgencies() string {
+	var agencies []string
+	for _, a := range d.AQI {
+		if !slices.Contains(agencies, a.Agency) {
+			agencies = append(agencies, a.Agency)
+		}
+	}
+	return fmt.Sprintf("AQI Forecast by %s", strings.Join(agencies, ", "))
 }
 
 type TidePredictions struct {
@@ -63,6 +95,13 @@ func (tp TidePredictions) GetStage() string {
 
 func (d ResultDto) HasEcoRegion() bool {
 	if d.EcoRegionLevel1 == "" {
+		return false
+	}
+	return true
+}
+
+func (d ResultDto) HasAQI() bool {
+	if len(d.AQI) == 0 {
 		return false
 	}
 	return true

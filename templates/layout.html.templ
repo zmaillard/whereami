@@ -1,6 +1,9 @@
 package templates
 
-import "fmt"
+import (
+    "fmt"
+    "github.com/zmaillard/whereami/templates/components"
+)
 
 templ Page (title string, version string) {
 <!DOCTYPE html>
@@ -16,12 +19,9 @@ templ Page (title string, version string) {
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
     >
+    @components.Css()
 
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
-              integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
-              crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js"></script>
+    @components.Script()
 </head>
 <body hx-ext="loading-states">
         { children... }

@@ -1,0 +1,52 @@
+package templates
+
+import "github.com/zmaillard/whereami/templates/components"
+
+type MapDto struct {
+    BaseDto
+}
+
+templ Map(content MapDto) {
+    @components.Css() {
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+             integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+             crossorigin=""/>
+        <link rel="stylesheet" href="/assets/css/map.css"/>
+    }
+
+    @components.Script() {
+        <script src="//unpkg.com/alpinejs" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+                  integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+                  crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js"></script>
+         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+             crossorigin=""></script>
+    }
+
+
+    @Page("Where Am I? - Map", content.VersionNumber) {
+    <div class="map-container" x-data="mapsidebar">
+        <div class="sidebar">
+            <div class="container has-text-centered">
+                <h1 class="title">Where Am I?</h1>
+                <h2 class="subtitle">Information about where you are, or where you want to be</h2>
+                <div x-show="hasplace">
+                    <div x-html="formatplace"></div>
+                </div>
+                <div x-show="hasplace">
+                    <form id="locationForm" method="POST" action="/" >
+                    <button class="button is-primary" data-loading-class="is-loading" data-loading-disable hx-post="/details" hx-target="#details"  hx-swap="show:#details:top" x-text="detailsButtonText"></button>
+                    <input name="lat" type="hidden" id="latitude" />
+                    <input name="lng" type="hidden" id="longitude" />
+                    </form>
+                </div>
+            </div>
+            <div class="container" id="details"></div>
+        </div>
+        <div id="map"></div>
+    </div>
+    <script src="/assets/js/map.js"></script>
+    }
+}

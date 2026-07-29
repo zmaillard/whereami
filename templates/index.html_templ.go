@@ -8,6 +8,8 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "github.com/zmaillard/whereami/templates/components"
+
 type IndexDto struct {
 	BaseDto
 }
@@ -45,26 +47,48 @@ func Dashboard(content IndexDto) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"hero is-fullheight\" x-data=\"locate\"><div class=\"hero-body\"><div class=\"container has-text-centered\"><h1 class=\"title\">Where Am I?</h1><h2 class=\"subtitle\">Information about where you are, or where you want to be</h2><div x-show=\"hasplace\"><div x-html=\"formatplace\"></div><div>or search for a custom location in the United States</div></div><div class=\"box\"><div class=\"field is-grouped\"><p class=\"control is-expanded\"><input x-model=\"searchFilter\" class=\"input\" type=\"text\" placeholder=\"Where Is This Place?\"></p><p class=\"control\"><button @click=\"search\" role=\"button\" class=\"button is-info\" type=\"submit\">Find Place</button></p></div></div><div x-show=\"hasplace\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><button class=\"button is-primary\" data-loading-class=\"is-loading\" data-loading-disable hx-post=\"/details\" hx-target=\"#details\" hx-swap=\"show:#details:top\" x-text=\"detailsButtonText\"></button> <input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"></form></div></div></div><div x-show=\"showSearch\"></div></div><section><div class=\"container\" id=\"details\"></div></section><input id=\"mapbox_token\" type=\"hidden\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 44, Col: 74}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><script src=\"/assets/js/locate.js\"></script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<script src=\"//unpkg.com/alpinejs\" defer></script> <script src=\"https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js\" integrity=\"sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V\" crossorigin=\"anonymous\"></script> <script src=\"https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js\"></script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Page("Where Am I?", content.VersionNumber).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Script().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"hero is-fullheight\" x-data=\"locate\"><div class=\"hero-body\"><div class=\"container has-text-centered\"><h1 class=\"title\">Where Am I?</h1><h2 class=\"subtitle\">Information about where you are, or where you want to be</h2><div x-show=\"hasplace\"><div x-html=\"formatplace\"></div><div>or search for a custom location in the United States</div></div><div class=\"box\"><div class=\"field is-grouped\"><p class=\"control is-expanded\"><input x-model=\"searchFilter\" class=\"input\" type=\"text\" placeholder=\"Where Is This Place?\"></p><p class=\"control\"><button @click=\"search\" role=\"button\" class=\"button is-info\" type=\"submit\">Find Place</button></p></div></div><div x-show=\"hasplace\"><form id=\"locationForm\" method=\"POST\" action=\"/\"><button class=\"button is-primary\" data-loading-class=\"is-loading\" data-loading-disable hx-post=\"/details\" hx-target=\"#details\" hx-swap=\"show:#details:top\" x-text=\"detailsButtonText\"></button> <input name=\"lat\" type=\"hidden\" id=\"latitude\"> <input name=\"lng\" type=\"hidden\" id=\"longitude\"></form></div></div></div><div x-show=\"showSearch\"></div></div><section><div class=\"container\" id=\"details\"></div></section><input id=\"mapbox_token\" type=\"hidden\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(content.MapboxToken)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `index.html.templ`, Line: 55, Col: 74}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><script src=\"/assets/js/locate.js\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = Page("Where Am I?", content.VersionNumber).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

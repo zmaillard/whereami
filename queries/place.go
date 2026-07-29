@@ -6,6 +6,7 @@ import (
 
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
+	"github.com/zmaillard/whereami/util"
 )
 
 type place struct {
@@ -40,7 +41,7 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 	var nextLargestPlaceId *int
 	var distance float64
 	var p place
-	err = incorpStmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&name, &nextLargestPlaceId)
+	err = incorpStmt.QueryRow(util.AsSpatialIndexQueryParameter(coords)).Scan(&name, &nextLargestPlaceId)
 	if err == nil {
 		slog.Info("Found incorporated place", "name", name)
 
@@ -70,7 +71,7 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 	}
 	defer unincorpStmt.Close()
 
-	err = unincorpStmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&name)
+	err = unincorpStmt.QueryRow(util.AsSpatialIndexQueryParameter(coords)).Scan(&name)
 	if err != nil {
 		slog.Info("No unincorporated place found", "name", name)
 		slog.Error(err.Error())
