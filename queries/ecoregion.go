@@ -7,6 +7,7 @@ import (
 
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
+	"github.com/zmaillard/whereami/util"
 )
 
 type ecoregions struct {
@@ -49,7 +50,7 @@ func (d *Database) GetEcoregions(ctx context.Context, coords models.Coordinates)
 	defer stmt.Close()
 
 	var level4USCode, us_l4name, us_l3code, us_l3name, na_l3code, na_l3name, na_l2code, na_l2name, na_l1code, na_l1name, l4_key, l3_key, l2_key, l1_key string
-	err = stmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&level4USCode, &us_l4name, &us_l3code, &us_l3name, &na_l3code, &na_l3name, &na_l2code, &na_l2name, &na_l1code, &na_l1name, &l4_key, &l3_key, &l2_key, &l1_key)
+	err = stmt.QueryRow(util.AsSpatialIndexQueryParameter(coords)).Scan(&level4USCode, &us_l4name, &us_l3code, &us_l3name, &na_l3code, &na_l3name, &na_l2code, &na_l2name, &na_l1code, &na_l1name, &l4_key, &l3_key, &l2_key, &l1_key)
 	if err != nil {
 		slog.Error(err.Error())
 		return d.getAlaskaEcoregions(ctx, coords)
@@ -91,7 +92,7 @@ func (d *Database) getAlaskaEcoregions(ctx context.Context, coords models.Coordi
 	defer stmt.Close()
 
 	var level1key, level2key, level3key string
-	err = stmt.QueryRow(coords.AsSpatialIndexQueryParameter()).Scan(&level1key, &level2key, &level3key)
+	err = stmt.QueryRow(util.AsSpatialIndexQueryParameter(coords)).Scan(&level1key, &level2key, &level3key)
 	if err != nil {
 		slog.Error(err.Error())
 		return nil, err

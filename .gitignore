@@ -178,3 +178,5 @@ whereami.db
 *.db-shm
 *.db-wal
 *.gz
+
+**/*.DS_Store

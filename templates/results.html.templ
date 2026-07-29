@@ -9,6 +9,8 @@ templ Results(content ResultDto) {
 
                     <dt>Location </dt> <dd>{content.GetCoordinates()}</dd>
                     <dt>Time Zone</dt> <dd>{content.FormatTimeZone()}</dd>
+                    <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
+                    <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
                     <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
                 </dl>
             </div>
@@ -29,18 +31,28 @@ templ Results(content ResultDto) {
         <div class="cell box">
             <div class="content">
                 <h3 class="title is-3">Meteorology</h3>
-                <dl class="margins-removed">
-                    <dt>Weather Service Office </dt> <dd><a href={content.GetFormattedOfficeLink()}>{content.WeatherServiceOfficeName}</a></dd>
-                    <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
-                    <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
-                </dl>
                 <h4 class="subtitle is-4">Forecast</h4>
                 if content.ForecastPeriod1Name != "" && content.ForecastPeriod2Name != "" {
                     <dl class="margins-removed">
                         <dt>{content.ForecastPeriod1Name}</dt> <dd>{content.ForecastPeriod1Details}</dd>
                         <dt>{content.ForecastPeriod2Name}</dt> <dd>{content.ForecastPeriod2Details}</dd>
                     </dl>
+                    <span class="has-text-weight-light"><a href={content.GetFormattedOfficeLink()}>Weather Forecast by NWS {content.WeatherServiceOfficeName} Office</a></span>
                 }
+
+                if content.HasAQI() {
+                    <h4 class="subtitle is-4">Air Quality Forecast</h4>
+                    <table>
+                    for _, aqi := range content.AQI {
+                        <tr>
+                            <td>{aqi.ForecastPeriod()}</td>
+                            <td>{aqi.Type}</td>
+                            <td>{aqi.Details()}</td>
+                        </tr>
+                    }
+                    </table>
+                    <span class="has-text-weight-light"><a href="https://www.airnow.gov/">{content.AQIAgencies()}</a></span>
+               }
             </div>
         </div>
         <div class="cell box">

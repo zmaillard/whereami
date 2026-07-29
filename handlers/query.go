@@ -5,13 +5,14 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/zmaillard/whereami/config"
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/queries"
 	"github.com/zmaillard/whereami/templates"
 	"github.com/zmaillard/whereami/util"
 )
 
-func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFunc {
+func Details(database *queries.Database, httpClient *http.Client, cfg *config.Config) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		coords := new(Coordinates)
 		var resultDto templates.ResultDto
@@ -30,6 +31,7 @@ func Details(database *queries.Database, httpClient *http.Client) echo.HandlerFu
 			queries.InstrumentQuery("weather", database.GetWeather(httpClient)),
 			queries.InstrumentQuery("tides", database.GetTides(httpClient)),
 			queries.InstrumentQuery("stream", database.GetStream),
+			queries.InstrumentQuery("aqi", database.GetAQI(httpClient, cfg)),
 		}
 		ch := make(chan models.Result, 1)
 		for _, query := range ops {
