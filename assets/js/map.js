@@ -18,10 +18,25 @@ document.addEventListener('alpine:init', () => {
                 position: 'topright'
             }).addTo(self.map);
 
-            L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
+            let newUSGSQuad = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {
                 maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(self.map);
+                attribution: 'Tiles &copy; USGS'
+            })
+            newUSGSQuad.addTo(self.map);
+
+            let oldUSGSQuad = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/{z}/{y}/{x}', {
+                mapType: 'U',
+                maxZoom: 15,
+                minZoom: 9,
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, and the GIS User Community'
+            });
+
+            let baseLayers = {
+                "USGS Topographic": newUSGSQuad,
+                "Old USGS": oldUSGSQuad
+            };
+
+            L.control.layers(baseLayers, {}).addTo(self.map);
 
             L.Control.DetailsView = L.Control.extend({
               onAdd: function(m) {

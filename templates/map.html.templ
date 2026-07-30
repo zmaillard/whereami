@@ -30,11 +30,13 @@ templ Map(content MapDto) {
     <div class="map-container" x-data="mapsidebar">
         <div id="map"></div>
         <div class="details-widget-container">
-            <div id="widget" class="has-text-light has-background-grey-light">
-                <div x-show="hasplace">
-                    <div x-html="formatplace"></div>
+            <div id="widget" class="is-size-6">
+                <div class="box">
+                    <div x-show="hasplace">
+                        <div x-html="modalheader"></div>
+                    </div>
+                    <button x-bind:class="isLoading ? 'is-loading' : ''" @click="openModal" class="button is-ghost  js-modal-trigger">Details</button>
                 </div>
-                <button x-bind:class="isLoading ? 'is-loading' : ''" @click="openModal" class="button is-ghost is-small js-modal-trigger">Details</button>
             </div>
         </div>
         <div class="modal map-details-modal">
