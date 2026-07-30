@@ -12,15 +12,27 @@ body {
     flex: 1; /* Takes all available space */
     display: flex;
     width: 100%;
+    min-height: 0; /* Critical for flex scrolling */
 }
 
 .sidebar {
     width: 25%;
     border-right: 1px solid #dbdbdb;
     overflow-y: auto;
+    min-height: 0; /* Allow shrinking below content size */
+    max-height: 100%; /* Prevent growth beyond parent */
+    flex-shrink: 0; /* Don't shrink to accommodate map */
 }
 
 .sidebar-content {
+    padding: 1.5rem;
+}
+
+/* Override Bulma container behavior inside sidebar */
+.sidebar .container {
+    max-width: none;
+    width: 100%;
+    margin: 0;
     padding: 1.5rem;
 }
 
@@ -59,4 +71,12 @@ body {
     .footer .content {
         font-size: 0.9rem;
     }
+}
+
+.details-widget-container {
+    display: none;
+}
+
+.map-details-modal {
+    z-index: 1000;
 }

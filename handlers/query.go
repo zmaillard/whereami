@@ -20,6 +20,8 @@ func Details(database *queries.Database, httpClient *http.Client, cfg *config.Co
 			return err
 		}
 
+		view := c.QueryParam("view")
+
 		ctx := c.Request().Context()
 		ops := []models.Querier{
 			queries.InstrumentQuery("county", database.GetCounty),
@@ -51,6 +53,9 @@ func Details(database *queries.Database, httpClient *http.Client, cfg *config.Co
 			}
 		}
 
+		if view == "lite" {
+			return util.RenderView(c, templates.ResultsLite(resultDto))
+		}
 		return util.RenderView(c, templates.Results(resultDto))
 	}
 }
