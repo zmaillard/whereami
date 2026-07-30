@@ -28,24 +28,29 @@ templ Map(content MapDto) {
 
     @Page("Where Am I? - Map", content.VersionNumber) {
     <div class="map-container" x-data="mapsidebar">
-        <div class="sidebar">
-            <div class="container has-text-centered">
-                <h1 class="title">Where Am I?</h1>
-                <h2 class="subtitle">Information about where you are, or where you want to be</h2>
+        <div id="map"></div>
+        <div class="details-widget-container">
+            <div id="widget" class="has-text-light has-background-grey-light">
                 <div x-show="hasplace">
                     <div x-html="formatplace"></div>
                 </div>
-                <div x-show="hasplace">
-                    <form id="locationForm" method="POST" action="/" >
-                    <button class="button is-primary" data-loading-class="is-loading" data-loading-disable hx-post="/details" hx-target="#details"  hx-swap="show:#details:top" x-text="detailsButtonText"></button>
-                    <input name="lat" type="hidden" id="latitude" />
-                    <input name="lng" type="hidden" id="longitude" />
-                    </form>
-                </div>
+                <button x-bind:class="isLoading ? 'is-loading' : ''" @click="openModal" class="button is-ghost is-small js-modal-trigger">Details</button>
             </div>
-            <div class="container" id="details"></div>
         </div>
-        <div id="map"></div>
+        <div class="modal map-details-modal">
+          <div class="modal-background"></div>
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title" x-html="modalheader"></p>
+              <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body" >
+                <div x-html="details" id="details-modal-result" class="content">
+                </div>
+              <!-- Content ... -->
+            </section>
+          </div>
+        </div>
     </div>
     <script src="/assets/js/map.js"></script>
     }

@@ -1,0 +1,88 @@
+package templates
+
+templ ResultsLite(content ResultDto) {
+            <div class="content">
+                <h3 class="title is-3">Location</h3>
+                <dl class="margins-removed">
+
+                    <dt>Location </dt> <dd>{content.GetCoordinates()}</dd>
+                    <dt>Time Zone</dt> <dd>{content.FormatTimeZone()}</dd>
+                    <dt>Sunrise</dt> <dd>{content.Sunrise.Format("3:04PM MST")}</dd>
+                    <dt>Sunset</dt> <dd>{content.Sunset.Format("3:04PM MST")}</dd>
+                    <dt>Elevation</dt> <dd>{content.GetFormattedElevation()}</dd>
+                </dl>
+                <h3 class="title is-3">Political Boundaries</h3>
+                <dl class="margins-removed">
+                    <dt>County</dt><dd>{content.County}</dd>
+                    <dt>State</dt><dd>{content.State}</dd>
+                    <dt>Congress</dt><dd>{content.CongressionalDistrict}</dd>
+                    if content.PlaceName != "" {
+                    <dt>Place Name</dt><dd>{content.FormatPlaceName()}</dd>
+                    }
+                </dl>
+                <h3 class="title is-3">Meteorology</h3>
+                <h4 class="subtitle is-4">Forecast</h4>
+                if content.ForecastPeriod1Name != "" && content.ForecastPeriod2Name != "" {
+                    <dl class="margins-removed">
+                        <dt>{content.ForecastPeriod1Name}</dt> <dd>{content.ForecastPeriod1Details}</dd>
+                        <dt>{content.ForecastPeriod2Name}</dt> <dd>{content.ForecastPeriod2Details}</dd>
+                    </dl>
+                    <span class="has-text-weight-light"><a href={content.GetFormattedOfficeLink()}>Weather Forecast by NWS {content.WeatherServiceOfficeName} Office</a></span>
+                }
+
+                if content.HasAQI() {
+                    <h4 class="subtitle is-4">Air Quality Forecast</h4>
+                    <table>
+                    for _, aqi := range content.AQI {
+                        <tr>
+                            <td>{aqi.ForecastPeriod()}</td>
+                            <td>{aqi.Type}</td>
+                            <td>{aqi.Details()}</td>
+                        </tr>
+                    }
+                    </table>
+                    <span class="has-text-weight-light"><a href="https://www.airnow.gov/">{content.AQIAgencies()}</a></span>
+               }
+                <h3 class="title is-3">Hydrography</h3>
+                <dl class="margins-removed">
+                    <dt>Drains Into</dt><dd>{content.GetSink()}</dd>
+                    <dt>All Tributaries</dt><dd>{content.GetFormattedTributaries()}</dd>
+                </dl>
+        if content.HasEcoRegion() {
+                    <h3 class="title is-3">Ecoregions</h3>
+                    <dl class="margins-removed">
+                        <dt>Level 1</dt><dd>{content.EcoRegionLevel1}</dd>
+                        <dt>Level 2</dt><dd>{content.EcoRegionLevel2}</dd>
+                        <dt>Level 3</dt><dd>{content.EcoRegionLevel3}</dd>
+                        if content.EcoRegionLevel4 != "" {
+                            <dt>Level 4</dt><dd>{content.EcoRegionLevel4}</dd>
+                        }
+                    </dl>
+        }
+        if content.HasTideStation && len(content.TidePredictions) > 0 {
+                    <h3 class="title is-3">Tides</h3>
+                    <dl class="margins-removed">
+                        <dt>Station</dt><dd>{content.TideStationName}</dd>
+                    </dl>
+                    <table>
+                    for _, tide := range content.TidePredictions {
+                        <tr>
+                            <td>{tide.GetStage()}</td>
+                            <td>{tide.Time.Format("3:04PM MST")}</td>
+                            <td>{tide.Height} feet</td>
+                        </tr>
+                    }
+                    </table>
+        }
+                <h3 class="title is-3">Nearby Features</h3>
+                <dl class="margins-removed">
+                    <dt>Nearest Summit</dt> <dd>{content.GetFormattedSummit()}</dd>
+                    if content.NextLargestCity != "" {
+                    <dt>Nearest Larger City</dt><dd>{content.FormatNearestLargestCity()}</dd>
+                    }
+                    if content.NationalPark != "" {
+                    <dt>Nearest National Park</dt><dd>{content.FormatNationalPark()}</dd>
+                    }
+                </dl>
+    </div>
+}

@@ -28,7 +28,9 @@ templ Page (title string, version string) {
           <footer class="footer">
             <div class="content has-text-centered">
               <p>
-                <strong>Where Am I?</strong> by <a href="https://zachmaillard.xyz">Zach Maillard</a> <br/> <a href="/about">About</a> | <a href={templ.URL(fmt.Sprintf("https://github.com/zmaillard/whereami/releases/tag/%s", version))}>{version}</a>
+                <strong>Where Am I?</strong> by <a href="https://zachmaillard.xyz">Zach Maillard</a> <br/>
+                <a href="/">Text Search</a> | <a href="/map">Map Search</a> <br/>
+                <a href="/about">About</a> | <a href={templ.URL(fmt.Sprintf("https://github.com/zmaillard/whereami/releases/tag/%s", version))}>{version}</a>
               </p>
             </div>
           </footer>
