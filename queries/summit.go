@@ -7,6 +7,7 @@ import (
 	"github.com/dhconnelly/rtreego"
 	"github.com/zmaillard/whereami/models"
 	"github.com/zmaillard/whereami/templates"
+	"github.com/zmaillard/whereami/util"
 )
 
 type Summit struct {
@@ -14,6 +15,8 @@ type Summit struct {
 	Elevation        float64
 	Distance         float64
 	CurrentElevation float64
+	Bearing          float64
+	BearingDirection string
 }
 
 func (s *Summit) SetResults(dto *templates.ResultDto) {
@@ -21,6 +24,7 @@ func (s *Summit) SetResults(dto *templates.ResultDto) {
 	dto.NearestSummitElevation = s.Elevation
 	dto.NearestSummitDistance = s.Distance
 	dto.Elevation = s.CurrentElevation
+	dto.NearestSummitBearing = s.BearingDirection
 }
 
 func (d *Database) GetNearestSummit(ctx context.Context, coords models.Coordinates, filterElevation float64) (models.Result, error) {
@@ -33,7 +37,7 @@ func (d *Database) GetNearestSummit(ctx context.Context, coords models.Coordinat
 
 	summitIndex := results[0].(*summitIndex)
 
-	stmt, err := d.db.PrepareContext(ctx, `SELECT feature_name, elevation,   CvtToUsMi(Distance(geom, ST_POINT(?,?), 1 )) AS dist_m
+	stmt, err := d.db.PrepareContext(ctx, `SELECT feature_name, elevation, ST_X(geom),ST_Y(geom), CvtToUsMi(Distance(geom, ST_POINT(?,?), 1 )) AS dist_m
 		FROM gnis
 		WHERE feature_id = ?`)
 	if err != nil {
@@ -42,15 +46,19 @@ func (d *Database) GetNearestSummit(ctx context.Context, coords models.Coordinat
 	defer stmt.Close()
 
 	var name string
-	var elevation, distance float64
-	err = stmt.QueryRow(coords.Longitude(), coords.Latitude(), summitIndex.Feature_id).Scan(&name, &elevation, &distance)
+	var elevation, distance, longitude, latitude float64
+	err = stmt.QueryRow(coords.Longitude(), coords.Latitude(), summitIndex.Feature_id).Scan(&name, &elevation, &longitude, &latitude, &distance)
 	if err != nil {
 		slog.Warn("Error getting summit results", "query", stmt, "err", err)
 		return nil, err
 	}
 
+	sc := &summitCoords{lng: longitude, lat: latitude}
+	bearing := util.GetBearing(coords, sc)
+	bearingDir := util.BearingToDirection(bearing)
+
 	slog.Info("Found nearest summit", "name", name, "elevation", elevation, "distance_km", distance)
-	return &Summit{Name: name, Elevation: elevation, Distance: distance, CurrentElevation: filterElevation}, nil
+	return &Summit{Name: name, Elevation: elevation, Distance: distance, Bearing: bearing, BearingDirection: bearingDir, CurrentElevation: filterElevation}, nil
 }
 
 func (d *Database) LoadSummitTree(ctx context.Context) error {
@@ -105,4 +113,17 @@ func elevationFilter(elevation float64) rtreego.Filter {
 		}
 		return false, false
 	}
+}
+
+type summitCoords struct {
+	lat float64
+	lng float64
+}
+
+func (s *summitCoords) Latitude() float64 {
+	return s.lat
+}
+
+func (s *summitCoords) Longitude() float64 {
+	return s.lng
 }

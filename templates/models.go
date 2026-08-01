@@ -32,7 +32,6 @@ type ResultDto struct {
 	EcoRegionLevel1          string            `json:"eco_region_level_1"`
 	EcoRegionLevel2          string            `json:"eco_region_level_2"`
 	EcoRegionLevel3          string            `json:"eco_region_level_3"`
-	EcoRegionLevel4          string            `json:"eco_region_level_4"`
 	ForecastPeriod1Name      string            `json:"forecast_period_1_name"`
 	ForecastPeriod2Name      string            `json:"forecast_period_2_name"`
 	ForecastPeriod1Details   string            `json:"forecast_period_1_details"`
@@ -46,6 +45,9 @@ type ResultDto struct {
 	NationalParkDistance     float64           `json:"national_park_distance"`
 	NextLargestCityDistance  float64           `json:"next_largest_city_distance"`
 	AQI                      []AQI             `json:"aqi"`
+	NearestSummitBearing     string
+	NationalParkBearing      string
+	NextLargestCityBearing   string
 }
 
 type AQI struct {
@@ -112,7 +114,7 @@ func (d ResultDto) GetFormattedElevation() string {
 }
 
 func (d ResultDto) GetFormattedSummit() string {
-	return fmt.Sprintf("%s (%.2f feet - %.2f miles away)", d.NearestSummit, d.NearestSummitElevation, d.NearestSummitDistance)
+	return fmt.Sprintf("%s (%.2f feet) - (%.2f miles to the %s)", d.NearestSummit, d.NearestSummitElevation, d.NearestSummitDistance, d.NearestSummitBearing)
 }
 
 func (d ResultDto) GetFormattedTributaries() string {
@@ -120,7 +122,7 @@ func (d ResultDto) GetFormattedTributaries() string {
 }
 
 func (d ResultDto) FormatNearestLargestCity() string {
-	return fmt.Sprintf("%s, %s (%.2f miles away)", d.NextLargestCity, d.NextLargestCityState, d.NextLargestCityDistance)
+	return fmt.Sprintf("%s, %s (%.2f miles to the %s)", d.NextLargestCity, d.NextLargestCityState, d.NextLargestCityDistance, d.NextLargestCityBearing)
 }
 
 func (d ResultDto) GetSink() string {
@@ -145,7 +147,7 @@ func (d ResultDto) FormatPlaceName() string {
 }
 
 func (d ResultDto) FormatNationalPark() string {
-	return fmt.Sprintf("%s (%.2f miles away)", d.NationalPark, d.NationalParkDistance)
+	return fmt.Sprintf("%s (%.2f miles to the %s)", d.NationalPark, d.NationalParkDistance, d.NationalParkBearing)
 }
 
 func (d ResultDto) FormatTimeZone() string {

@@ -21,27 +21,30 @@ templ ResultsLite(content ResultDto) {
                     }
                 </dl>
                 <h3 class="title is-3">Meteorology</h3>
-                <h4 class="subtitle is-4">Forecast</h4>
-                if content.ForecastPeriod1Name != "" && content.ForecastPeriod2Name != "" {
-                    <dl class="margins-removed">
-                        <dt>{content.ForecastPeriod1Name}</dt> <dd>{content.ForecastPeriod1Details}</dd>
-                        <dt>{content.ForecastPeriod2Name}</dt> <dd>{content.ForecastPeriod2Details}</dd>
-                    </dl>
-                    <span class="has-text-weight-light"><a href={content.GetFormattedOfficeLink()}>Weather Forecast by NWS {content.WeatherServiceOfficeName} Office</a></span>
-                }
-
-                if content.HasAQI() {
-                    <h4 class="subtitle is-4">Air Quality Forecast</h4>
-                    <table>
-                    for _, aqi := range content.AQI {
-                        <tr>
-                            <td>{aqi.ForecastPeriod()}</td>
-                            <td>{aqi.Type}</td>
-                            <td>{aqi.Details()}</td>
-                        </tr>
+                <div class="block">
+                    <h4 class="subtitle is-4">Forecast</h4>
+                    if content.ForecastPeriod1Name != "" && content.ForecastPeriod2Name != "" {
+                        <dl class="margins-removed">
+                            <dt>{content.ForecastPeriod1Name}</dt> <dd>{content.ForecastPeriod1Details}</dd>
+                            <dt>{content.ForecastPeriod2Name}</dt> <dd>{content.ForecastPeriod2Details}</dd>
+                        </dl>
+                        <span class="has-text-weight-light"><a href={content.GetFormattedOfficeLink()}>Weather Forecast by NWS {content.WeatherServiceOfficeName} Office</a></span>
                     }
-                    </table>
-                    <span class="has-text-weight-light"><a href="https://www.airnow.gov/">{content.AQIAgencies()}</a></span>
+                </div>
+                if content.HasAQI() {
+                    <div class="block">
+                        <h4 class="subtitle is-4">Air Quality Forecast</h4>
+                        <table>
+                        for _, aqi := range content.AQI {
+                            <tr>
+                                <td>{aqi.ForecastPeriod()}</td>
+                                <td>{aqi.Type}</td>
+                                <td>{aqi.Details()}</td>
+                            </tr>
+                        }
+                        </table>
+                        <span class="has-text-weight-light"><a href="https://www.airnow.gov/">{content.AQIAgencies()}</a></span>
+                    </div>
                }
                 <h3 class="title is-3">Hydrography</h3>
                 <dl class="margins-removed">
@@ -54,10 +57,8 @@ templ ResultsLite(content ResultDto) {
                         <dt>Level 1</dt><dd>{content.EcoRegionLevel1}</dd>
                         <dt>Level 2</dt><dd>{content.EcoRegionLevel2}</dd>
                         <dt>Level 3</dt><dd>{content.EcoRegionLevel3}</dd>
-                        if content.EcoRegionLevel4 != "" {
-                            <dt>Level 4</dt><dd>{content.EcoRegionLevel4}</dd>
-                        }
                     </dl>
+                    <span class="has-text-weight-light"><a href="https://www.epa.gov/eco-research/ecoregions-north-america">Ecoregions of North America (US EPA)</a></span>
         }
         if content.HasTideStation && len(content.TidePredictions) > 0 {
                     <h3 class="title is-3">Tides</h3>
