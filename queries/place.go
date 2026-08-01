@@ -15,6 +15,7 @@ type place struct {
 	NextLargestCity         string
 	NextLargestCityState    string
 	NextLargestCityDistance float64
+	NextLargestCityBearing  string
 }
 
 func (c place) SetResults(dto *templates.ResultDto) {
@@ -23,6 +24,7 @@ func (c place) SetResults(dto *templates.ResultDto) {
 	dto.NextLargestCity = c.NextLargestCity
 	dto.NextLargestCityState = c.NextLargestCityState
 	dto.NextLargestCityDistance = c.NextLargestCityDistance
+	dto.NextLargestCityBearing = c.NextLargestCityBearing
 }
 
 func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (models.Result, error) {
@@ -39,22 +41,27 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 
 	var name, nextLargestPlaceName, nextLargestPlaceState string
 	var nextLargestPlaceId *int
-	var distance float64
+	var distance, longitude, latitude float64
 	var p place
 	err = incorpStmt.QueryRow(util.AsSpatialIndexQueryParameter(coords)).Scan(&name, &nextLargestPlaceId)
 	if err == nil {
 		slog.Info("Found incorporated place", "name", name)
 
 		if nextLargestPlaceId != nil {
-			nextIncorpStmt, err := d.db.PrepareContext(ctx, `SELECT  nlip.PLACE_NAME, nlip.STATE_NAME, CvtToUsMi(Distance(ST_POINT(?,?),nlip.shape, 1 )) AS dist_m
+			nextIncorpStmt, err := d.db.PrepareContext(ctx, `SELECT  nlip.PLACE_NAME, nlip.STATE_NAME, ST_X(ST_CENTROID(nlip.shape)),ST_Y(ST_CENTROID(nlip.shape)), CvtToUsMi(Distance(ST_POINT(?,?),nlip.shape, 1 )) AS dist_m
 			FROM incorporated_place nlip
 			where nlip.fid = ?`)
 			if err != nil {
 				return nil, err
 			}
 			defer nextIncorpStmt.Close()
-			nextIncorpStmt.QueryRow(coords.Longitude(), coords.Latitude(), *nextLargestPlaceId).Scan(&nextLargestPlaceName, &nextLargestPlaceState, &distance)
-			return &place{Name: name, Type: "Incorporated", NextLargestCity: nextLargestPlaceName, NextLargestCityState: nextLargestPlaceState, NextLargestCityDistance: distance}, nil
+			nextIncorpStmt.QueryRow(coords.Longitude(), coords.Latitude(), *nextLargestPlaceId).Scan(&nextLargestPlaceName, &nextLargestPlaceState, &longitude, &latitude, &distance)
+
+			sc := &summitCoords{lng: longitude, lat: latitude}
+			bearing := util.GetBearing(coords, sc)
+			bearingDir := util.BearingToDirection(bearing)
+
+			return &place{Name: name, Type: "Incorporated", NextLargestCity: nextLargestPlaceName, NextLargestCityState: nextLargestPlaceState, NextLargestCityDistance: distance, NextLargestCityBearing: bearingDir}, nil
 
 		}
 
@@ -79,7 +86,7 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 	slog.Info("Found unincorporated place", "name", name)
 	p = place{Name: name, Type: "Unincorporated"}
 
-	findNextPlaceStmt, err := d.db.PrepareContext(ctx, `select b.PLACE_NAME, b.STATE_NAME, CvtToUsMi(a.distance_m) as dist_miles
+	findNextPlaceStmt, err := d.db.PrepareContext(ctx, `select b.PLACE_NAME, b.STATE_NAME,ST_X(ST_CENTROID(b.shape)),ST_Y(ST_CENTROID(b.shape)), CvtToUsMi(a.distance_m) as dist_miles
 		from knn2 a JOIN incorporated_place AS b ON (b.fid = a.fid)
 		where f_table_name = 'incorporated_place' and ref_geometry = MakePoint(?,?) and radius = 1.0 and max_items = 1 AND expand = 1;`)
 	if err != nil {
@@ -87,10 +94,15 @@ func (d *Database) GetPlace(ctx context.Context, coords models.Coordinates) (mod
 	}
 	defer findNextPlaceStmt.Close()
 
-	err = findNextPlaceStmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&p.NextLargestCity, &p.NextLargestCityState, &p.NextLargestCityDistance)
+	err = findNextPlaceStmt.QueryRow(coords.Longitude(), coords.Latitude()).Scan(&p.NextLargestCity, &p.NextLargestCityState, &longitude, &latitude, &p.NextLargestCityDistance)
 	if err != nil {
 		slog.Info("No Nearest Place Found")
 	}
+	sc := &summitCoords{lng: longitude, lat: latitude}
+	bearing := util.GetBearing(coords, sc)
+	bearingDir := util.BearingToDirection(bearing)
+
+	p.NextLargestCityBearing = bearingDir
 
 	return &p, nil
 }
